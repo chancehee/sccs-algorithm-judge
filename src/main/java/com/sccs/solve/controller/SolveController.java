@@ -3,17 +3,17 @@ package com.sccs.solve.controller;
 import com.sccs.solve.dto.SolveInfo;
 import com.sccs.solve.dto.SolveResult;
 import com.sccs.solve.service.SolveService;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStream;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+
+import com.sun.tools.jdeprscan.scan.Scan;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.jni.Proc;
+import org.python.antlr.ast.Str;
 import org.python.core.PyFunction;
 import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import org.springframework.web.multipart.MultipartFile;
@@ -90,9 +89,15 @@ public class SolveController {
         interpreter.execfile(fullPath); // 실행위치 지정
         PyFunction pyFunction = interpreter.get("main", PyFunction.class); // 메인 함수 실행
         PyObject pyObject = pyFunction.__call__(); // 리턴 값
+        String result = pyObject.toString();
+
+
+        StringBuilder output = new StringBuilder();
+
+        if (result.equals("2")) resultMap.put("result", "정답");
+        else resultMap.put("result", "오답");
 
         resultMap.put("message", "소스코드 실행 성공");
-        resultMap.put("result", pyObject.toString());
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
@@ -118,10 +123,48 @@ public class SolveController {
 
 
     @PostMapping("/testJava")
-    public ResponseEntity<?> testJava(MultipartFile mfile) {
+    public ResponseEntity<?> testJava() throws IOException, InterruptedException {
         HashMap<String, String> resultMap = new HashMap<>();
 
-        
+        File file = new File("/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/usercode/test.java");
+        System.out.println(file.getName());
+
+
+        ProcessBuilder pb = new ProcessBuilder("javac", "/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/usercode/test.java");
+        Process process = pb.start();
+        process.waitFor();
+
+        if(process.exitValue() != 0 ) {
+            System.out.println("컴파일 에러");
+            return null;
+        }
+
+        pb = new ProcessBuilder("java", "-Xmx" + 256 + "m", "-cp", "/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/usercode/", "test");
+        pb.redirectInput(new File("/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/input/input.txt"));
+
+        process = pb.start();
+
+        StringBuilder output = new StringBuilder();
+        try (Scanner sc = new Scanner(process.getInputStream())) {
+            System.out.println(sc);
+            while (sc.hasNextLine()) {
+                System.out.println("hi");
+                output.append(sc.nextLine()).append("\n");
+            }
+        }
+
+        // 실제 정답도 동일한 과정을 거칩니다.
+        StringBuilder expectedOutput = new StringBuilder();
+        try (Scanner sc = new Scanner(new File("/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/output/output.txt"))) {
+            System.out.println(sc);
+            while (sc.hasNextLine()) {
+                System.out.println("bye");
+                expectedOutput.append(sc.nextLine()).append("\n");
+            }
+        }
+
+        System.out.println("실행 결과 : " + output.toString());
+        System.out.println("예상 결과 : " + expectedOutput.toString());
 
 
         resultMap.put("message", "success");
