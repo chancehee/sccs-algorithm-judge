@@ -13,9 +13,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.jni.Proc;
 import org.python.core.PyFunction;
 import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,67 +37,73 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class SolveController {
 
+    private final Logger logger = LoggerFactory.getLogger(SolveController.class);
     private final SolveService solveService; // RequiredConstructor : final이나 @NonNull인 필드값만 파라미터로 받는 생성자를 만들어준다.
     private static PythonInterpreter interpreter;
 
     @GetMapping("/python")
     public ResponseEntity<?> solveWithPython() throws IOException, InterruptedException {
-        // 파이썬 코드를 돌리는 로직
         interpreter = new PythonInterpreter();
-        interpreter.execfile("C:\\Users\\SSAFY\\Desktop\\test.py");
+        interpreter.execfile("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\usercode\\test.py");
 
-        Instant beforeTime = Instant.now();
+        Instant beforeTime = Instant.now(); // Time (1)
         System.gc();
-        Runtime.getRuntime().gc();
+        Runtime.getRuntime().gc(); // GC(1)
 
         PyFunction pyFunction = interpreter.get("main", PyFunction.class);
         PyObject pyObject = pyFunction.__call__();
 
         System.gc();
-        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        Instant afterTime = Instant.now();
+        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory(); // GC(2)
 
-        long secDiffTime = Duration.between(beforeTime, afterTime).toNanos();
+        Instant afterTime = Instant.now(); // Time(2)
 
-        System.out.println("실행 시간 : " + ((double)secDiffTime) / 1000000000);
-        System.out.println("[GC]사용 메모리 : " + (usedMemory) + " kb"); // 1kb = 0.001 mb
+        long secDiffTime = Duration.between(beforeTime, afterTime).toNanos(); // Time(3)
+
+        System.out.println("실행 시간 : " + ((double)secDiffTime) / 1000000000); // Time(4)
+        System.out.println("[GC]사용 메모리 : " + (usedMemory) + " kb"); // 1kb = 0.001 mb // GC(3)
         System.out.println(pyObject.toString());
-        System.out.println(pyObject.getType()); // int
 
         return new ResponseEntity<>(pyObject.toString(), HttpStatus.OK);
     }
 
+
+
+
     @PostMapping("/testPython")
     public ResponseEntity<?> testPython(MultipartFile mfile) throws IOException {
-//        File file = new File("C:\\Users\\SSAFY\\Desktop\\test.py");
-        System.out.println(mfile);
-        System.out.println(mfile.getOriginalFilename());
+        HashMap<String, String> resultMap = new HashMap<>(); // 응답 결과 자료구조
 
-        String fullPath = "";
-        if (!mfile.isEmpty()) {
-            fullPath = "C:\\Users\\SSAFY\\Desktop\\" + mfile.getOriginalFilename();
-            System.out.println(fullPath);
-            mfile.transferTo(new File(fullPath));
+        if (mfile == null) { // 프록시서버로 부터 파일이 넘어오지 않은 경우
+            resultMap.put("message", "멀티파일 응답 실패.. 다시 보내주세요");
+            resultMap.put("result", "fail");
+            return new ResponseEntity<>(resultMap, HttpStatus.OK);
         }
 
-        interpreter = new PythonInterpreter();
-        interpreter.execfile(fullPath);
-        PyFunction pyFunction = interpreter.get("main", PyFunction.class);
-        PyObject pyObject = pyFunction.__call__();
+        logger.info("멀티파트 파일 원본 이름 : {}", mfile.getOriginalFilename());
 
-        System.out.println(pyObject.toString());
+        String fullPath = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\usercode" + mfile.getOriginalFilename(); // [윈도우 기준] 파일 생성 경로
+        mfile.transferTo(new File(fullPath)); // 멀티파트 파일 convert to 파일
+        logger.debug("소스코드 파일 경로 : {}", fullPath);
 
-        HashMap<String, String> resultMap = new HashMap<>();
-        resultMap.put("result", "success");
+        interpreter = new PythonInterpreter(); // 파이썬 실행기
+        interpreter.execfile(fullPath); // 실행위치 지정
+        PyFunction pyFunction = interpreter.get("main", PyFunction.class); // 메인 함수 실행
+        PyObject pyObject = pyFunction.__call__(); // 리턴 값
+
+        resultMap.put("message", "소스코드 실행 성공");
+        resultMap.put("result", pyObject.toString());
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
 
-    @GetMapping("/java")
-    public ResponseEntity<?> solveWithJava() throws IOException, InterruptedException {
 
-        SolveInfo solveInfo = new SolveInfo("ssafy", "class Main {"
-                + "public static void main(String args[]) {return 1;;}"
-                + "}", 256, 2);
+
+
+
+
+    @GetMapping("/java")
+    public ResponseEntity<?> solveWithJava(MultipartFile mfile) throws IOException, InterruptedException {
+        SolveInfo solveInfo = new SolveInfo("ssafy", "class Main { public static void main(String[] args) { System.out.print(1); } }", 256, 2);
 
         System.out.println(solveInfo);
 
@@ -105,4 +114,18 @@ public class SolveController {
                 "return"
                 , HttpStatus.OK);
     }
+
+
+
+    @PostMapping("/testJava")
+    public ResponseEntity<?> testJava(MultipartFile mfile) {
+        HashMap<String, String> resultMap = new HashMap<>();
+
+        
+
+
+        resultMap.put("message", "success");
+        return new ResponseEntity<>(resultMap, HttpStatus.OK);
+    }
+
 }

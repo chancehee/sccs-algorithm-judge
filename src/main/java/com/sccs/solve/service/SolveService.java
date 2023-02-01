@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SolveService {
-    private final String SOLUTIONFILEROOTDIR = "C:\\Users\\SSAFY\\Desktop\\Judge\\src\\main\\resources\\usercode";
-    private final String INPUTFILEROOTDIR = "C:\\Users\\SSAFY\\Desktop\\Judge\\src\\main\\resources\\input\\";
-    private final String OUTPUTFILEROOTDIR = "C:\\Users\\SSAFY\\Desktop\\Judge\\src\\main\\resources\\output\\";
+    private final String SOLUTIONFILEROOTDIR = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\usercode\\";
+    private final String INPUTFILEROOTDIR = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\input\\";
+    private final String OUTPUTFILEROOTDIR = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\output\\";
 
     public SolveResult solve(SolveInfo solveInfo) throws IOException, InterruptedException{
         if (checkSystemCallInCode(solveInfo.getCode())) {
@@ -36,17 +36,17 @@ public class SolveService {
     }
 
     public void deleteUserCode() {
-        File file = new File(SOLUTIONFILEROOTDIR + "Solution.java");
+        File file = new File(SOLUTIONFILEROOTDIR + "testJava.java");
         if (file != null)
             file.delete();
-        file = new File(SOLUTIONFILEROOTDIR + "Solution.class");
+        file = new File(SOLUTIONFILEROOTDIR + "testJava.class");
         if (file != null)
             file.delete();
     }
     public SolveResult codeExecutor(SolveInfo solveInfo) throws IOException, InterruptedException{
 
         // Solution.java 파일을 생성하고 받아온 코드를 파일에 적습니다.
-        File file = new File(SOLUTIONFILEROOTDIR + "Solution.java");
+        File file = new File(SOLUTIONFILEROOTDIR + "testJava.java");
         System.out.println(file.getName());
         FileWriter writer = new FileWriter(file);
         writer.write(solveInfo.getCode());
@@ -54,7 +54,7 @@ public class SolveService {
 
         // 사용자가 제출한 Solution.java를 컴파일합니다.
         // Shell Script : javac Solution.java
-        ProcessBuilder pb = new ProcessBuilder("javac", SOLUTIONFILEROOTDIR + "Solution.java");
+        ProcessBuilder pb = new ProcessBuilder("javac", SOLUTIONFILEROOTDIR + "testJava.java");
         Process process = pb.start();
         process.waitFor();
 
