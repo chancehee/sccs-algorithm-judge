@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -24,11 +25,14 @@ import org.python.util.PythonInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
@@ -120,19 +124,21 @@ public class SolveController {
 
 
     @PostMapping("/java")
-    public ResponseEntity<?> solveWithJava(MultipartFile mfile) throws IOException, InterruptedException {
+    public ResponseEntity<?> solveWithJava(MultipartFile mfile , String type, String no, int memory, int runtime) throws IOException, InterruptedException {
         SolveInfo solveInfo = null;
         //SolveInfo solveInfo = new SolveInfo("ssafy", "class Solution { public static void main(String[] args) { System.out.print(8); } }", 256, 2);
 
-        String  type     = "1"; // 클라이언트에게 넘겨받을 값
-        String  no       = "1"; // 문제 번호
-        int     memory   = 256; // 메모리
-        int     limit   = 2; // 시간
+//        type     = "1"; // 클라이언트에게 넘겨받을 값
+//        no       = "1"; // 문제 번호
+//        memory   = 256; // 메모리
+//        runtime   = 2; // 시간
+        System.out.println(mfile.getOriginalFilename());
+        System.out.println(type + " " + no + " " + memory + " " + runtime);
 
         // mfile to file (변환)
         File convFile = new File("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\file\\Solution.java");
         System.out.println(mfile.getOriginalFilename());
-        //convFile.createNewFile();
+        convFile.createNewFile();
         FileOutputStream fos = new FileOutputStream(convFile);
         fos.write(mfile.getBytes());
         fos.close();
@@ -143,8 +149,9 @@ public class SolveController {
             Stream<String> lines = Files.lines(path);
 
             String content = lines.collect(Collectors.joining(System.lineSeparator()));
+            System.out.println("**소스 코드**");
             System.out.println(content);
-            solveInfo = new SolveInfo("chan", content, memory, limit);
+            solveInfo = new SolveInfo("chan", content, memory, runtime);
             lines.close();
 
         } catch (IOException e) {
