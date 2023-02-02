@@ -15,16 +15,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class SolveService {
     private final String SOLUTIONFILEROOTDIR = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\usercode\\";
-    private final String INPUTFILEROOTDIR = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\input\\";
-    private final String OUTPUTFILEROOTDIR = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\output\\";
+    private final String INPUTFILEROOTDIR = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\"; // 유형 / 문제 번호 / intput /
+    private final String OUTPUTFILEROOTDIR = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\"; // 유형 / 문제 번호 / output /
 
-    public SolveResult solve(SolveInfo solveInfo) throws IOException, InterruptedException{
+    public SolveResult solve(SolveInfo solveInfo, String type, String no) throws IOException, InterruptedException{
         if (checkSystemCallInCode(solveInfo.getCode())) {
             System.out.println("시스템 콜 함수 사용");
             return new SolveResult(0, "시스템 콜 함수 사용");
         }
         System.out.println("codeExecutor 실행 !");
-        return codeExecutor(solveInfo);
+        return codeExecutor(solveInfo, type, no);
     }
 
     public boolean checkSystemCallInCode(String code) {
@@ -36,17 +36,17 @@ public class SolveService {
     }
 
     public void deleteUserCode() {
-        File file = new File(SOLUTIONFILEROOTDIR + "testJava.java");
+        File file = new File(SOLUTIONFILEROOTDIR + "Solution.java");
         if (file != null)
             file.delete();
-        file = new File(SOLUTIONFILEROOTDIR + "testJava.class");
+        file = new File(SOLUTIONFILEROOTDIR + "Solution.class");
         if (file != null)
             file.delete();
     }
-    public SolveResult codeExecutor(SolveInfo solveInfo) throws IOException, InterruptedException{
+    public SolveResult codeExecutor(SolveInfo solveInfo, String type, String no) throws IOException, InterruptedException{
 
         // Solution.java 파일을 생성하고 받아온 코드를 파일에 적습니다.
-        File file = new File(SOLUTIONFILEROOTDIR + "testJava.java");
+        File file = new File(SOLUTIONFILEROOTDIR  + "Solution.java");
         System.out.println(file.getName());
         FileWriter writer = new FileWriter(file);
         writer.write(solveInfo.getCode());
@@ -54,7 +54,7 @@ public class SolveService {
 
         // 사용자가 제출한 Solution.java를 컴파일합니다.
         // Shell Script : javac Solution.java
-        ProcessBuilder pb = new ProcessBuilder("javac", SOLUTIONFILEROOTDIR + "testJava.java");
+        ProcessBuilder pb = new ProcessBuilder("javac", SOLUTIONFILEROOTDIR + "Solution.java");
         Process process = pb.start();
         process.waitFor();
 
@@ -70,7 +70,8 @@ public class SolveService {
         // redirectInput을 이용하면 Solution에 redirection을 전달할 수 있습니다.
         // input.txt = 리다이렉션의 매개변수
         pb = new ProcessBuilder("java","-Xmx" + solveInfo.getMemorySize() + "m", "-cp",SOLUTIONFILEROOTDIR, "Solution");
-        pb.redirectInput(new File(INPUTFILEROOTDIR + "input.txt"));
+        pb.redirectInput(new File(INPUTFILEROOTDIR + type + "\\" + no + "\\input\\" + "in1.txt"));
+
 
         long startTime = System.nanoTime();
 
@@ -105,7 +106,7 @@ public class SolveService {
 
         // 실제 정답도 동일한 과정을 거칩니다.
         StringBuilder expectedOutput = new StringBuilder();
-        try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + "output.txt"))) {
+        try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + "\\" + no + "\\output\\" + "out1.txt"))) {
             while (sc.hasNextLine()) {
                 expectedOutput.append(sc.nextLine()).append("\n");
             }

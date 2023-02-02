@@ -5,12 +5,16 @@ import com.sccs.solve.dto.SolveResult;
 import com.sccs.solve.service.SolveService;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
-import com.sun.tools.jdeprscan.scan.Scan;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.jni.Proc;
 import org.python.antlr.ast.Str;
@@ -91,8 +95,19 @@ public class SolveController {
         PyObject pyObject = pyFunction.__call__(); // 리턴 값
         String result = pyObject.toString();
 
-
+        // 실행 결과
         StringBuilder output = new StringBuilder();
+
+        // 정답
+        StringBuilder expectedOutput = new StringBuilder();
+        try (Scanner sc = new Scanner(new File("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\output.txt"))) {
+            System.out.println(sc);
+            while (sc.hasNextLine()) {
+                expectedOutput.append(sc.nextLine()).append("\n");
+            }
+        }
+
+        logger.debug("expectedOutput : {}", expectedOutput);
 
         if (result.equals("2")) resultMap.put("result", "정답");
         else resultMap.put("result", "오답");
@@ -104,71 +119,43 @@ public class SolveController {
 
 
 
-
-
-    @GetMapping("/java")
+    @PostMapping("/java")
     public ResponseEntity<?> solveWithJava(MultipartFile mfile) throws IOException, InterruptedException {
-        SolveInfo solveInfo = new SolveInfo("ssafy", "class Main { public static void main(String[] args) { System.out.print(1); } }", 256, 2);
+        SolveInfo solveInfo = null;
+        //SolveInfo solveInfo = new SolveInfo("ssafy", "class Solution { public static void main(String[] args) { System.out.print(8); } }", 256, 2);
 
-        System.out.println(solveInfo);
+        String  type     = "1"; // 클라이언트에게 넘겨받을 값
+        String  no       = "1"; // 문제 번호
+        int     memory   = 256; // 메모리
+        int     limit   = 2; // 시간
 
-        SolveResult solveResult = solveService.solve(solveInfo);
+        // mfile to file (변환)
+        File convFile = new File("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\file\\Solution.java");
+        System.out.println(mfile.getOriginalFilename());
+        //convFile.createNewFile();
+        FileOutputStream fos = new FileOutputStream(convFile);
+        fos.write(mfile.getBytes());
+        fos.close();
+
+        // 파일에서 String 추출
+        try {
+            Path path = Paths.get("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\file\\Solution.java");
+            Stream<String> lines = Files.lines(path);
+
+            String content = lines.collect(Collectors.joining(System.lineSeparator()));
+            System.out.println(content);
+            solveInfo = new SolveInfo("chan", content, memory, limit);
+            lines.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        SolveResult solveResult = solveService.solve(solveInfo, type, no);
         System.out.println(solveResult);
 
         return new ResponseEntity<>(
                 "return"
                 , HttpStatus.OK);
     }
-
-
-
-    @PostMapping("/testJava")
-    public ResponseEntity<?> testJava() throws IOException, InterruptedException {
-        HashMap<String, String> resultMap = new HashMap<>();
-
-        File file = new File("/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/usercode/test.java");
-        System.out.println(file.getName());
-
-
-        ProcessBuilder pb = new ProcessBuilder("javac", "/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/usercode/test.java");
-        Process process = pb.start();
-        process.waitFor();
-
-        if(process.exitValue() != 0 ) {
-            System.out.println("컴파일 에러");
-            return null;
-        }
-
-        pb = new ProcessBuilder("java", "-Xmx" + 256 + "m", "-cp", "/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/usercode/", "test");
-        pb.redirectInput(new File("/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/input/input.txt"));
-
-        process = pb.start();
-
-        StringBuilder output = new StringBuilder();
-        try (Scanner sc = new Scanner(process.getInputStream())) {
-            System.out.println(sc);
-            while (sc.hasNextLine()) {
-                System.out.println("hi");
-                output.append(sc.nextLine()).append("\n");
-            }
-        }
-
-        // 실제 정답도 동일한 과정을 거칩니다.
-        StringBuilder expectedOutput = new StringBuilder();
-        try (Scanner sc = new Scanner(new File("/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/output/output.txt"))) {
-            System.out.println(sc);
-            while (sc.hasNextLine()) {
-                System.out.println("bye");
-                expectedOutput.append(sc.nextLine()).append("\n");
-            }
-        }
-
-        System.out.println("실행 결과 : " + output.toString());
-        System.out.println("예상 결과 : " + expectedOutput.toString());
-
-
-        resultMap.put("message", "success");
-        return new ResponseEntity<>(resultMap, HttpStatus.OK);
-    }
-
 }
