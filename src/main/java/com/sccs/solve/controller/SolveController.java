@@ -132,12 +132,18 @@ public class SolveController {
 //        no       = "1"; // 문제 번호
 //        memory   = 256; // 메모리
 //        runtime   = 2; // 시간
-        System.out.println(mfile.getOriginalFilename());
+
+        // 보내줄것 3개
+        // result
+        // memory
+        // 런타임
+        HashMap<String, Object> resultMap = new HashMap<>();
+
         System.out.println(type + " " + no + " " + memory + " " + runtime);
 
         // mfile to file (변환)
         File convFile = new File("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\file\\Solution.java");
-        System.out.println(mfile.getOriginalFilename());
+        logger.info("넘어온 파일명 : {}", mfile.getOriginalFilename());
         convFile.createNewFile();
         FileOutputStream fos = new FileOutputStream(convFile);
         fos.write(mfile.getBytes());
@@ -149,8 +155,7 @@ public class SolveController {
             Stream<String> lines = Files.lines(path);
 
             String content = lines.collect(Collectors.joining(System.lineSeparator()));
-            System.out.println("**소스 코드**");
-            System.out.println(content);
+            logger.info("소스코드 : \n {}", content);
             solveInfo = new SolveInfo("chan", content, memory, runtime);
             lines.close();
 
@@ -159,10 +164,14 @@ public class SolveController {
         }
 
         SolveResult solveResult = solveService.solve(solveInfo, type, no);
-        System.out.println(solveResult);
+
+        resultMap.put("result", solveResult.getResult());
+        resultMap.put("runtime", solveResult.getTime());
+        resultMap.put("memory", solveResult.getMemory());
+
 
         return new ResponseEntity<>(
-                "return"
+                resultMap
                 , HttpStatus.OK);
     }
 }
