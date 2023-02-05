@@ -49,7 +49,10 @@ public class SolveController {
     private static PythonInterpreter interpreter;
 
     @GetMapping("/python")
-    public ResponseEntity<?> solveWithPython() throws IOException, InterruptedException {
+    public ResponseEntity<?> solveWithPython(MultipartFile mfile , String type, String no, int memory, int runtime) throws IOException, InterruptedException {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        SolveInfo solveInfo = null;
+
         interpreter = new PythonInterpreter();
         interpreter.execfile("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\usercode\\test.py");
 
@@ -71,7 +74,16 @@ public class SolveController {
         System.out.println("[GC]사용 메모리 : " + (usedMemory) + " kb"); // 1kb = 0.001 mb // GC(3)
         System.out.println(pyObject.toString());
 
-        return new ResponseEntity<>(pyObject.toString(), HttpStatus.OK);
+
+        SolveResult solveResult = new SolveResult((int) ((secDiffTime) / 1000000000), "정답", (int) usedMemory);
+
+        resultMap.put("result", solveResult.getResult());
+        resultMap.put("runtime", solveResult.getTime());
+        resultMap.put("memory", solveResult.getMemory());
+
+        return new ResponseEntity<>(
+                resultMap
+                , HttpStatus.OK);
     }
 
 
