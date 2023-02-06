@@ -50,17 +50,17 @@ public class SolveController {
 
     @GetMapping("/python")
     public ResponseEntity<?> solveWithPython(MultipartFile mfile , String type, String no, int memory, int runtime) throws IOException, InterruptedException {
-        HashMap<String, Object> resultMap = new HashMap<>();
-        SolveInfo solveInfo = null;
+        HashMap<String, Object> resultMap = new HashMap<>(); // 결과를 담는 자료구조
+        SolveInfo solveInfo = null; // 클라이언트가 넘긴 정보
 
-        interpreter = new PythonInterpreter();
-        interpreter.execfile("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\usercode\\test.py");
+        interpreter = new PythonInterpreter(); // 파이썬 실행기
+        interpreter.execfile("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\usercode\\test.py"); // 실행시킬 파일경로 명시
 
         Instant beforeTime = Instant.now(); // Time (1)
         System.gc();
         Runtime.getRuntime().gc(); // GC(1)
 
-        PyFunction pyFunction = interpreter.get("main", PyFunction.class);
+        PyFunction pyFunction = interpreter.get("main", PyFunction.class); // main이라는 함수 실행
         PyObject pyObject = pyFunction.__call__();
 
         System.gc();
