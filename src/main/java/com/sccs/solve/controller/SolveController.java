@@ -139,9 +139,8 @@ public class SolveController {
     public ResponseEntity<?> solveWithJava(MultipartFile mfile , String type, String no, String memory, String runtime) throws IOException, InterruptedException {
         SolveInfo solveInfo = null;
 
-
-
         try {
+            System.out.println(File.separator);
             System.out.println(mfile.getOriginalFilename());
         } catch (Exception e) {
             System.out.println("file is null mintChoco");
@@ -164,9 +163,7 @@ public class SolveController {
 
         // mfile to file (변환)
         //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
-
-
-        File convFile = new File(File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
+        File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
         System.out.println(convFile.getPath());
         logger.info("넘어온 파일명 : {}", mfile.getOriginalFilename());
         convFile.createNewFile();
@@ -177,7 +174,7 @@ public class SolveController {
         // 파일에서 String 추출
         try {
             //Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
-            Path path = Paths.get(File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
+            Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
             String content = lines.collect(Collectors.joining(System.lineSeparator()));
