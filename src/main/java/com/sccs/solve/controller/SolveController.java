@@ -154,7 +154,8 @@ public class SolveController {
         System.out.println(type + " " + no + " " + memory + " " + runtime);
 
         // mfile to file (변환)
-        File convFile = new File("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\file\\Solution.java");
+        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
+        File convFile = new File("." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
         logger.info("넘어온 파일명 : {}", mfile.getOriginalFilename());
         convFile.createNewFile();
         FileOutputStream fos = new FileOutputStream(convFile);
@@ -163,7 +164,8 @@ public class SolveController {
 
         // 파일에서 String 추출
         try {
-            Path path = Paths.get("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\file\\Solution.java");
+            // Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
+            Path path = Paths.get("."+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
             String content = lines.collect(Collectors.joining(System.lineSeparator()));

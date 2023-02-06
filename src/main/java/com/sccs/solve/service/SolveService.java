@@ -25,13 +25,15 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.ThreadMXBean;
 import java.util.List;
-
+// "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file"
 @Service
 public class SolveService {
-    private final String SOLUTIONFILEROOTDIR = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\usercode\\";
-    private final String INPUTFILEROOTDIR = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\"; // 유형 / 문제 번호 / intput /
-    private final String OUTPUTFILEROOTDIR = "C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\"; // 유형 / 문제 번호 / output /
-
+//    private final String SOLUTIONFILEROOTDIR = ".\\src\\main\\resources\\usercode\\";
+//    private final String INPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / intput /
+//    private final String OUTPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / output /
+    private final String SOLUTIONFILEROOTDIR = "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "usercode" + File.separator;
+    private final String INPUTFILEROOTDIR = "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
+    private final String OUTPUTFILEROOTDIR = "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
 
     public SolveResult solve(SolveInfo solveInfo, String type, String no) throws IOException, InterruptedException{
         if (checkSystemCallInCode(solveInfo.getCode())) {
