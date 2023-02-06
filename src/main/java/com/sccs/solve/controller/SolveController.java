@@ -138,6 +138,13 @@ public class SolveController {
     @PostMapping("/java")
     public ResponseEntity<?> solveWithJava(MultipartFile mfile , String type, String no, int memory, int runtime) throws IOException, InterruptedException {
         SolveInfo solveInfo = null;
+
+        try {
+            System.out.println(mfile.getOriginalFilename());
+        } catch (Exception e) {
+            System.out.println("file is null mintChoco");
+        }
+
         //SolveInfo solveInfo = new SolveInfo("ssafy", "class Solution { public static void main(String[] args) { System.out.print(8); } }", 256, 2);
 
 //        type     = "1"; // 클라이언트에게 넘겨받을 값
@@ -155,7 +162,9 @@ public class SolveController {
 
         // mfile to file (변환)
         //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
-        File convFile = new File("." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
+
+
+        File convFile = new File( File.separator + "judgeonline" + File.separator + "sccs-online" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
         logger.info("넘어온 파일명 : {}", mfile.getOriginalFilename());
         convFile.createNewFile();
         FileOutputStream fos = new FileOutputStream(convFile);
@@ -165,7 +174,7 @@ public class SolveController {
         // 파일에서 String 추출
         try {
             // Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
-            Path path = Paths.get("."+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
+            Path path = Paths.get(File.separator + "judgeonline" + File.separator + "sccs-online" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
             String content = lines.collect(Collectors.joining(System.lineSeparator()));

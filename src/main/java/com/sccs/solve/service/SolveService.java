@@ -31,9 +31,9 @@ public class SolveService {
 //    private final String SOLUTIONFILEROOTDIR = ".\\src\\main\\resources\\usercode\\";
 //    private final String INPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / intput /
 //    private final String OUTPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / output /
-    private final String SOLUTIONFILEROOTDIR = "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "usercode" + File.separator;
-    private final String INPUTFILEROOTDIR = "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
-    private final String OUTPUTFILEROOTDIR = "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
+    private final String SOLUTIONFILEROOTDIR = File.separator + "judgeonline" + File.separator + "sccs-online" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "usercode" + File.separator;
+    private final String INPUTFILEROOTDIR = File.separator + "judgeonline" + File.separator + "sccs-online"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
+    private final String OUTPUTFILEROOTDIR = File.separator + "judgeonline" + File.separator + "sccs-online"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
 
     public SolveResult solve(SolveInfo solveInfo, String type, String no) throws IOException, InterruptedException{
         if (checkSystemCallInCode(solveInfo.getCode())) {
@@ -86,8 +86,8 @@ public class SolveService {
         // redirectInput을 이용하면 Solution에 redirection을 전달할 수 있습니다.
         // input.txt = 리다이렉션의 매개변수
         pb = new ProcessBuilder("java","-Xmx" + solveInfo.getMemorySize() + "m", "-cp",SOLUTIONFILEROOTDIR, "Solution");
-        pb.redirectInput(new File(INPUTFILEROOTDIR + type + "\\" + no + "\\input\\" + "in1.txt"));
-
+        //pb.redirectInput(new File(INPUTFILEROOTDIR + type + "\\" + no + "\\input\\" + "in1.txt"));
+        pb.redirectOutput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + "in1.txt"));
 
         long startTime = System.nanoTime();
 
@@ -125,7 +125,8 @@ public class SolveService {
 
         // 실제 정답도 동일한 과정을 거칩니다.
         StringBuilder expectedOutput = new StringBuilder();
-        try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + "\\" + no + "\\output\\" + "out1.txt"))) {
+        //try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + "\\" + no + "\\output\\" + "out1.txt"))) {
+        try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + File.separator + no + File.separator + "output" + File.separator + "out1.txt"))) {
             while (sc.hasNextLine()) {
                 expectedOutput.append(sc.nextLine()).append("\n");
             }
