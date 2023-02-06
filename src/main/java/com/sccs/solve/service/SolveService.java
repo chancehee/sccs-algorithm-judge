@@ -28,12 +28,12 @@ import java.util.List;
 // "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file"
 @Service
 public class SolveService {
-//    private final String SOLUTIONFILEROOTDIR = ".\\src\\main\\resources\\usercode\\";
-//    private final String INPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / intput /
-//    private final String OUTPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / output /
-    private final String SOLUTIONFILEROOTDIR = File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "usercode" + File.separator;
-    private final String INPUTFILEROOTDIR = File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
-    private final String OUTPUTFILEROOTDIR = File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
+    private final String SOLUTIONFILEROOTDIR = ".\\src\\main\\resources\\usercode\\";
+    private final String INPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / intput /
+    private final String OUTPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / output /
+//    private final String SOLUTIONFILEROOTDIR = File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "usercode" + File.separator;
+//    private final String INPUTFILEROOTDIR = File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
+//    private final String OUTPUTFILEROOTDIR = File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
 
     public SolveResult solve(SolveInfo solveInfo, String type, String no) throws IOException, InterruptedException{
         if (checkSystemCallInCode(solveInfo.getCode())) {
@@ -87,7 +87,7 @@ public class SolveService {
         // input.txt = 리다이렉션의 매개변수
         pb = new ProcessBuilder("java","-Xmx" + solveInfo.getMemorySize() + "m", "-cp",SOLUTIONFILEROOTDIR, "Solution");
         //pb.redirectInput(new File(INPUTFILEROOTDIR + type + "\\" + no + "\\input\\" + "in1.txt"));
-        pb.redirectOutput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + "in1.txt"));
+        pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + "in1.txt"));
 
         long startTime = System.nanoTime();
 

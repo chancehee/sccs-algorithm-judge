@@ -136,8 +136,10 @@ public class SolveController {
 
 
     @PostMapping("/java")
-    public ResponseEntity<?> solveWithJava(MultipartFile mfile , String type, String no, int memory, int runtime) throws IOException, InterruptedException {
+    public ResponseEntity<?> solveWithJava(MultipartFile mfile , String type, String no, String memory, String runtime) throws IOException, InterruptedException {
         SolveInfo solveInfo = null;
+
+
 
         try {
             System.out.println(mfile.getOriginalFilename());
@@ -161,10 +163,10 @@ public class SolveController {
         System.out.println(type + " " + no + " " + memory + " " + runtime);
 
         // mfile to file (변환)
-        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
+        File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
 
 
-        File convFile = new File( File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
+        //File convFile = new File( File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
         System.out.println(convFile.getPath());
         logger.info("넘어온 파일명 : {}", mfile.getOriginalFilename());
         convFile.createNewFile();
@@ -174,13 +176,13 @@ public class SolveController {
 
         // 파일에서 String 추출
         try {
-            // Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
-            Path path = Paths.get(File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
+            Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
+            //Path path = Paths.get(File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
             String content = lines.collect(Collectors.joining(System.lineSeparator()));
             logger.info("소스코드 : \n {}", content);
-            solveInfo = new SolveInfo("chan", content, memory, runtime);
+            solveInfo = new SolveInfo("chan", content, Integer.parseInt(memory), Integer.parseInt(runtime));
             lines.close();
 
         } catch (IOException e) {
