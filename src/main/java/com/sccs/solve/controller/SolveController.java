@@ -40,7 +40,7 @@ import java.time.Instant;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/solve")
+@RequestMapping("/solve")
 @RequiredArgsConstructor
 public class SolveController {
 
