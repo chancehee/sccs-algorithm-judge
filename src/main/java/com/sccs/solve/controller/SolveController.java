@@ -2,37 +2,28 @@ package com.sccs.solve.controller;
 
 import com.sccs.solve.dto.SolveInfo;
 import com.sccs.solve.dto.SolveResult;
-import com.sccs.solve.service.SolveService;
+import com.sccs.solve.service.SolveServiceJava;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Scanner;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.jni.Proc;
-import org.python.antlr.ast.Str;
 import org.python.core.PyFunction;
 import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
@@ -45,7 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class SolveController {
 
     private final Logger logger = LoggerFactory.getLogger(SolveController.class);
-    private final SolveService solveService; // RequiredConstructor : final이나 @NonNull인 필드값만 파라미터로 받는 생성자를 만들어준다.
+    private final SolveServiceJava solveServiceJava; // RequiredConstructor : final이나 @NonNull인 필드값만 파라미터로 받는 생성자를 만들어준다.
     private static PythonInterpreter interpreter;
 
     @GetMapping("/python")
@@ -84,6 +75,30 @@ public class SolveController {
         return new ResponseEntity<>(
                 resultMap
                 , HttpStatus.OK);
+    }
+
+    @GetMapping("/getPython")
+    public String getPy() {
+        String scriptPath = "/Users/leechanhee/Desktop/sccs-online-judge/src/main/test1.py";
+        String memoryLimit = "512m";
+
+        ProcessBuilder builder = new ProcessBuilder("python", scriptPath);
+        try {
+            System.out.println("실행 시작 ");
+            Process process = builder.start();
+            System.out.println("실행 중...");
+            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+        return "성공";
     }
 
 
@@ -186,7 +201,7 @@ public class SolveController {
             e.printStackTrace();
         }
 
-        SolveResult solveResult = solveService.solve(solveInfo, type, no);
+        SolveResult solveResult = solveServiceJava.solve(solveInfo, type, no);
 
         resultMap.put("result", solveResult.getResult());
         resultMap.put("runtime", solveResult.getTime());

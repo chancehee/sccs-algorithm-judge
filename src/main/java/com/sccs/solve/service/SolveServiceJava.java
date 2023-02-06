@@ -2,32 +2,20 @@ package com.sccs.solve.service;
 
 import com.sccs.solve.dto.SolveInfo;
 import com.sccs.solve.dto.SolveResult;
-import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.management.GarbageCollectorMXBean;
-import java.lang.management.OperatingSystemMXBean;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.management.MBeanServerConnection;
-import org.springframework.stereotype.Component;
+
 import org.springframework.stereotype.Service;
 
-import java.lang.management.ClassLoadingMXBean;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.MemoryUsage;
-import java.lang.management.ThreadMXBean;
-import java.util.List;
 // "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file"
 @Service
-public class SolveService {
+public class SolveServiceJava {
 //    private final String SOLUTIONFILEROOTDIR = ".\\src\\main\\resources\\usercode\\";
 //    private final String INPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / intput /
 //    private final String OUTPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / output /
