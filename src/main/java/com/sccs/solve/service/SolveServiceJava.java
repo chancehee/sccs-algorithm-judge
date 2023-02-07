@@ -51,7 +51,7 @@ public class SolveServiceJava {
     public SolveResult codeExecutor(SolveInfo solveInfo, String type, String no) throws IOException, InterruptedException{
         // Solution.java 파일을 생성하고 받아온 코드를 파일에 적습니다.
         File file = new File(SOLUTIONFILEROOTDIR  + "Solution.java");
-        System.out.println("파일이름 : " + file.getName());
+
         FileWriter writer = new FileWriter(file);
         writer.write(solveInfo.getCode());
         writer.close();
@@ -81,7 +81,7 @@ public class SolveServiceJava {
 
         process = pb.start();
 
-        long finishMemory = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000 / 1000 /2);
+        long finishMemory = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024 /2);
 
         // 만약 문제에서 설정된 시간제한을 초과한다면 이를 체크하여 코드를 강제로 종료합니다.
         boolean finished = process.waitFor(solveInfo.getTimeLimit(), TimeUnit.SECONDS);

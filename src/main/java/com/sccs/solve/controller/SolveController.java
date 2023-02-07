@@ -152,38 +152,32 @@ public class SolveController {
 
     @PostMapping("/java")
     public ResponseEntity<?> solveWithJava(MultipartFile mfile , String type, String no, String memory, String runtime) throws IOException, InterruptedException {
-        SolveInfo solveInfo = null;
+        SolveInfo solveInfo = null; // 사용자가 제출한 정보
 
         try {
-            System.out.println(File.separator);
-            System.out.println(mfile.getOriginalFilename());
+            logger.info(mfile.getOriginalFilename()); // 클라이언트에게 넘어온 파일 이름 출력
         } catch (Exception e) {
-            System.out.println("file is null mintChoco");
+            System.out.println("file is null [mintChoco]"); // 클라이언트에게 넘어온 파일이 null인 경우
         }
-
-        //SolveInfo solveInfo = new SolveInfo("ssafy", "class Solution { public static void main(String[] args) { System.out.print(8); } }", 256, 2);
 
 //        type     = "1"; // 클라이언트에게 넘겨받을 값
 //        no       = "1"; // 문제 번호
 //        memory   = 256; // 메모리
 //        runtime   = 2; // 시간
 
-        // 보내줄것 3개
-        // result
-        // memory
-        // 런타임
-        HashMap<String, Object> resultMap = new HashMap<>();
+//        보내줄것 3개 : result(String), memory(int), runtime(int)
 
-        System.out.println(type + " " + no + " " + memory + " " + runtime);
+        HashMap<String, Object> resultMap = new HashMap<>(); // 결과값 저장 자료구조
+
+        logger.info("type, no, memory, runtime : {}" , type + " " + no + " " + memory + " " + runtime); // 클라이언트에서 넘어온 type, no, memory, runtime 출력
 
         // mfile to file (변환)
-        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
-        File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
-        System.out.println(convFile.getPath());
-        logger.info("넘어온 파일명 : {}", mfile.getOriginalFilename());
-        convFile.createNewFile();
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(mfile.getBytes());
+        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java"); // 윈도우 절대 경로
+        File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
+        logger.info("리눅스 서버 파일 존재 위치 절대 경로 : {}", convFile.getPath());
+        convFile.createNewFile(); // 변환한 파일 위에서 지정한 경로에 생성
+        FileOutputStream fos = new FileOutputStream(convFile); // 파일 입력 출력 스트림
+        fos.write(mfile.getBytes()); // 파일에서 넘어온 정보 -> 내가 생성한 파일에 입력 (소스코드 넣기)
         fos.close();
 
         // 파일에서 String 추출
@@ -192,21 +186,19 @@ public class SolveController {
             Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
-            String content = lines.collect(Collectors.joining(System.lineSeparator()));
-            logger.info("소스코드 : \n {}", content);
-            solveInfo = new SolveInfo("chan", content, Integer.parseInt(memory), Integer.parseInt(runtime));
+            String content = lines.collect(Collectors.joining(System.lineSeparator())); // 생성한 파일에서 String 형태를 라인 단위로 가져오기
+            logger.info("소스코드 : \n {}", content); // 한줄 단위로 소스코드 출력
+            solveInfo = new SolveInfo("chan", content, Integer.parseInt(memory), Integer.parseInt(runtime)); // 사용자아이디, 소스코드, 메모리, 실행시간 Dto에 세팅
             lines.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        SolveResult solveResult = solveServiceJava.solve(solveInfo, type, no);
+        SolveResult solveResult = solveServiceJava.solve(solveInfo, type, no); // 사용자 소스코드 Dto 정보로 문제풀이 -> 결과 받아오기
 
-        resultMap.put("result", solveResult.getResult());
-        resultMap.put("runtime", solveResult.getTime());
-        resultMap.put("memory", solveResult.getMemory());
-
+        resultMap.put("result", solveResult.getResult()); // 채점 결과
+        resultMap.put("runtime", solveResult.getTime());  // 실행 시간
+        resultMap.put("memory", solveResult.getMemory()); // 메모리
 
         return new ResponseEntity<>(
                 resultMap
