@@ -8,7 +8,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 import java.util.stream.Collectors;
@@ -164,9 +166,9 @@ public class SolveController {
 
         // mfile to file (변환)
         // 윈도우
-        File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
+        // File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
         // 리눅스
-        //File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
+        File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
         logger.info("리눅스 서버 파일 존재 위치 절대 경로 : {}", convFile.getPath());
         convFile.createNewFile(); // 변환한 파일 위에서 지정한 경로에 생성
         FileOutputStream fos = new FileOutputStream(convFile); // 파일 입력 출력 스트림
@@ -176,9 +178,9 @@ public class SolveController {
         // 파일에서 String 추출
         try {
             // 윈도우
-            Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
+            //Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
             // 리눅스
-            //Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
+            Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
             String content = lines.collect(Collectors.joining(System.lineSeparator())); // 생성한 파일에서 String 형태를 라인 단위로 가져오기
@@ -195,9 +197,12 @@ public class SolveController {
 //        resultMap.put("runtime", solveResult.getTime());  // 실행 시간
 //        resultMap.put("memory", solveResult.getMemory()); // 메모리
 
-
+        List<HashMap<String, Object>> resultList = new ArrayList<>();
 
         // 여러개 인풋 파일 돌리는 로직
+        double avgRuntime;
+        double sumRuntime = 0;
+        boolean isAnswer = true;
         for (int i=1; i<=5; i++) {
             SolveResult solveResult = solveServiceJava.solve(solveInfo, type, no, "in"+i+".txt", "out"+i+".txt");
 
@@ -207,12 +212,28 @@ public class SolveController {
             fiveMap.put("result", solveResult.getResult()); // 채점 결과
             fiveMap.put("runtime", solveResult.getTime());  // 실행 시간
             fiveMap.put("memory", solveResult.getMemory()); // 메모리
+            fiveMap.put("problemNo", i+"번");
 
-            resultMap.put("data"+i, fiveMap); // 5개의 소스코드 채점 결과를 data1, data2, data3 .. 이런식으로 resulMap에 저장
+//            resultMap.put("data"+i, fiveMap); // 5개의 소스코드 채점 결과를 data1, data2, data3 .. 이런식으로 resulMap에 저장
+            resultList.add(fiveMap);
+
+            if (!solveResult.getResult().equals("맞았습니다")) {
+                isAnswer = false;
+            }
+
+            sumRuntime += solveResult.getTime();
         }
+        avgRuntime = sumRuntime / 5.0;
+        logger.info("평균 실행 시간 : {}", avgRuntime);
+        logger.info("정답 여부 : {}", isAnswer);
+        HashMap<String, Object> tempMap = new HashMap<>();
+        tempMap.put("avgRuntime", avgRuntime);
+        tempMap.put("isAnswer", isAnswer);
+        resultList.add(tempMap);
 
         return new ResponseEntity<>(
-                resultMap
+                //resultMap
+                resultList
                 , HttpStatus.OK);
     }
 
