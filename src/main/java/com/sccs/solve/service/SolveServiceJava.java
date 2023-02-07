@@ -16,20 +16,22 @@ import org.springframework.stereotype.Service;
 // "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file"
 @Service
 public class SolveServiceJava {
+    // 윈도우
 //    private final String SOLUTIONFILEROOTDIR = ".\\src\\main\\resources\\usercode\\";
 //    private final String INPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / intput /
 //    private final String OUTPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / output /
+    // 리눅스
     private final String SOLUTIONFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "usercode" + File.separator;
     private final String INPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
     private final String OUTPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
 
-    public SolveResult solve(SolveInfo solveInfo, String type, String no) throws IOException, InterruptedException{
+    public SolveResult solve(SolveInfo solveInfo, String type, String no, String INTEXT, String OUTTEXT) throws IOException, InterruptedException{
         if (checkSystemCallInCode(solveInfo.getCode())) {
             System.out.println("시스템 콜 함수 사용");
             return new SolveResult(0, "시스템 콜 함수 사용", 0);
         }
         System.out.println("codeExecutor 실행 !");
-        return codeExecutor(solveInfo, type, no);
+        return codeExecutor(solveInfo, type, no, INTEXT, OUTTEXT);
     }
 
     public boolean checkSystemCallInCode(String code) {
@@ -48,7 +50,7 @@ public class SolveServiceJava {
         if (file != null)
             file.delete();
     }
-    public SolveResult codeExecutor(SolveInfo solveInfo, String type, String no) throws IOException, InterruptedException{
+    public SolveResult codeExecutor(SolveInfo solveInfo, String type, String no, String INTEXT, String OUTTEXT) throws IOException, InterruptedException{
         // Solution.java 파일을 생성하고 받아온 코드를 파일에 적습니다.
         File file = new File(SOLUTIONFILEROOTDIR  + "Solution.java");
 
@@ -75,7 +77,12 @@ public class SolveServiceJava {
         // input.txt = 리다이렉션의 매개변수
         pb = new ProcessBuilder("java","-Xmx" + solveInfo.getMemorySize() + "m", "-cp",SOLUTIONFILEROOTDIR, "Solution");
         //pb.redirectInput(new File(INPUTFILEROOTDIR + type + "\\" + no + "\\input\\" + "in1.txt"));
-        pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + "in1.txt"));
+
+        // 절대 경로로 인풋 파일 1개 돌리기
+        // pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + "in1.txt"));
+
+        // 절대 경로로 인풋 파일 파라미터로 받아서 1개 돌리기
+        pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + INTEXT));
 
         long startTime = System.nanoTime();
 
@@ -114,7 +121,7 @@ public class SolveServiceJava {
         // 실제 정답도 동일한 과정을 거칩니다.
         StringBuilder expectedOutput = new StringBuilder();
         //try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + "\\" + no + "\\output\\" + "out1.txt"))) {
-        try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + File.separator + no + File.separator + "output" + File.separator + "out1.txt"))) {
+        try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + File.separator + no + File.separator + "output" + File.separator + OUTTEXT))) {
             while (sc.hasNextLine()) {
                 expectedOutput.append(sc.nextLine()).append("\n");
             }

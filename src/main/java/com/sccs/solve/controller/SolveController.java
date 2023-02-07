@@ -172,7 +172,9 @@ public class SolveController {
         logger.info("type, no, memory, runtime : {}" , type + " " + no + " " + memory + " " + runtime); // 클라이언트에서 넘어온 type, no, memory, runtime 출력
 
         // mfile to file (변환)
-        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java"); // 윈도우 절대 경로
+        // 윈도우
+        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
+        // 리눅스
         File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
         logger.info("리눅스 서버 파일 존재 위치 절대 경로 : {}", convFile.getPath());
         convFile.createNewFile(); // 변환한 파일 위에서 지정한 경로에 생성
@@ -182,7 +184,9 @@ public class SolveController {
 
         // 파일에서 String 추출
         try {
+            // 윈도우
             //Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
+            // 리눅스
             Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
@@ -194,11 +198,27 @@ public class SolveController {
             e.printStackTrace();
         }
 
-        SolveResult solveResult = solveServiceJava.solve(solveInfo, type, no); // 사용자 소스코드 Dto 정보로 문제풀이 -> 결과 받아오기
+        // SolveResult solveResult = solveServiceJava.solve(solveInfo, type, no); // 사용자 소스코드 Dto 정보로 문제풀이 -> 결과 받아오기
 
-        resultMap.put("result", solveResult.getResult()); // 채점 결과
-        resultMap.put("runtime", solveResult.getTime());  // 실행 시간
-        resultMap.put("memory", solveResult.getMemory()); // 메모리
+//        resultMap.put("result", solveResult.getResult()); // 채점 결과
+//        resultMap.put("runtime", solveResult.getTime());  // 실행 시간
+//        resultMap.put("memory", solveResult.getMemory()); // 메모리
+
+
+
+        // 여러개 인풋 파일 돌리는 로직
+        for (int i=1; i<=5; i++) {
+            SolveResult solveResult = solveServiceJava.solve(solveInfo, type, no, "in"+i+".txt", "out"+i+".txt");
+
+            logger.info(" {} 번 문제 solveResult : {}", i, solveResult);
+
+            HashMap<String, Object> fiveMap = new HashMap<>();
+            fiveMap.put("result", solveResult.getResult()); // 채점 결과
+            fiveMap.put("runtime", solveResult.getTime());  // 실행 시간
+            fiveMap.put("memory", solveResult.getMemory()); // 메모리
+
+            resultMap.put("data"+i, fiveMap); // 5개의 소스코드 채점 결과를 data1, data2, data3 .. 이런식으로 resulMap에 저장
+        }
 
         return new ResponseEntity<>(
                 resultMap
