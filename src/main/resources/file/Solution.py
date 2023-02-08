@@ -1,11 +1,13 @@
-import java.util.Scanner;
+import sys
+import os
 
-class Solution {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int a = sc.nextInt();
-        int b = sc.nextInt();
+# workingdirectory = os.getcwd()
+# # print ('Number of Arguments: ', len(sys.argv))
+# # print ('Argument list: ', str(sys.argv))
+#
+# def addition():
+#   print(sys.argv[1] + sys.argv[2])
+#
+# addition()
 
-        System.out.println(a+b);
-    }
-}
+print(2)
