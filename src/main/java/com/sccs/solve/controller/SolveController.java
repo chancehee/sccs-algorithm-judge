@@ -57,9 +57,9 @@ public class SolveController {
 
         // mfile to file (변환)
         // 윈도우
-        File convFile = new File(".\\src\\main\\resources\\file\\Solution.py");
+        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.py");
         // 리눅스
-        //File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
+        File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
 
         convFile.createNewFile(); // 변환한 파일 위에서 지정한 경로에 생성
         FileOutputStream fos = new FileOutputStream(convFile); // 파일 입력 출력 스트림
@@ -69,9 +69,9 @@ public class SolveController {
         // 파일에서 String 추출
         try {
             // 윈도우
-            Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.py");
+            //Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.py");
             // 리눅스
-            //Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
+            Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
             String content = lines.collect(Collectors.joining(System.lineSeparator())); // 생성한 파일에서 String 형태를 라인 단위로 가져오기
@@ -173,9 +173,9 @@ public class SolveController {
 
         // mfile to file (변환)
         // 윈도우
-        File convFile = new File(".\\src\\main\\resources\\file\\Solution.py");
+        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.py");
         // 리눅스
-        //File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
+        File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
 
         convFile.createNewFile(); // 변환한 파일 위에서 지정한 경로에 생성
         FileOutputStream fos = new FileOutputStream(convFile); // 파일 입력 출력 스트림
@@ -185,9 +185,9 @@ public class SolveController {
         // 파일에서 String 추출
         try {
             // 윈도우
-            Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.py");
+            //Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.py");
             // 리눅스
-            //Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
+            Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
             String content = lines.collect(Collectors.joining(System.lineSeparator())); // 생성한 파일에서 String 형태를 라인 단위로 가져오기
@@ -333,9 +333,9 @@ public class SolveController {
 
         // mfile to file (변환)
         // 윈도우
-        File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
+        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
         // 리눅스
-        //File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
+        File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
         logger.info("리눅스 서버 파일 존재 위치 절대 경로 : {}", convFile.getPath());
         convFile.createNewFile(); // 변환한 파일 위에서 지정한 경로에 생성
         FileOutputStream fos = new FileOutputStream(convFile); // 파일 입력 출력 스트림
@@ -345,9 +345,9 @@ public class SolveController {
         // 파일에서 String 추출
         try {
             // 윈도우
-            Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
+            //Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
             // 리눅스
-            //Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
+            Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
             String content = lines.collect(Collectors.joining(System.lineSeparator())); // 생성한 파일에서 String 형태를 라인 단위로 가져오기
@@ -428,9 +428,9 @@ public class SolveController {
 
         // mfile to file (변환)
         // 윈도우
-        File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
+        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
         // 리눅스
-        //File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
+        File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
         logger.info("리눅스 서버 파일 존재 위치 절대 경로 : {}", convFile.getPath());
         convFile.createNewFile(); // 변환한 파일 위에서 지정한 경로에 생성
         FileOutputStream fos = new FileOutputStream(convFile); // 파일 입력 출력 스트림
@@ -440,9 +440,9 @@ public class SolveController {
         // 파일에서 String 추출
         try {
             // 윈도우
-            Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
+            //Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
             // 리눅스
-            //Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
+            Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
             String content = lines.collect(Collectors.joining(System.lineSeparator())); // 생성한 파일에서 String 형태를 라인 단위로 가져오기
