@@ -63,7 +63,7 @@ public class SolveServicePython {
         //ProcessBuilder pb;
         Process process;
 
-        ProcessBuilder pb = new ProcessBuilder("python", "-u", "-W", "ignore::ResourceWarning", "-c", "import resource; resource.setrlimit(resource.RLIMIT_AS, ("+ solveInfo.getMemorySize() +" * 1024 * 1024, -1))", SOLUTIONFILEROOTDIR + "Solution.py");
+        ProcessBuilder pb = new ProcessBuilder("python3", "-u", "-W", "ignore::ResourceWarning", "-c", "import resource; resource.setrlimit(resource.RLIMIT_AS, ("+ solveInfo.getMemorySize() +" * 1024 * 1024, -1))", SOLUTIONFILEROOTDIR + "Solution.py");
         //ProcessBuilder pb = new ProcessBuilder("python", SOLUTIONFILEROOTDIR + "Solution.py");
         //Process process = pb.start();
         //process.waitFor();
