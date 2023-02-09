@@ -27,6 +27,12 @@ dependencies {
     implementation group: 'org.python', name: 'jython-standalone', version: '2.7.2'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2 스웨거 설정
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+
+
 }
 
 tasks.named('test') {
