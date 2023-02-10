@@ -2,30 +2,19 @@ package com.sccs.solve.service;
 
 import com.sccs.solve.dto.SolveInfo;
 import com.sccs.solve.dto.SolveResult;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.ProcessBuilder.Redirect;
-//import org.python.jline.internal.InputStreamReader;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public class SolveServicePython {
-    // 윈도우
-//    private final String SOLUTIONFILEROOTDIR = ".\\src\\main\\resources\\usercode\\";
-//    private final String INPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / intput /
-//    private final String OUTPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / output /
-    private final String SOLUTIONFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator;
-    private final String INPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
-    private final String OUTPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
+public class SolveServiceMacPython {
+    private final String SOLUTIONFILEROOTDIR =  "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator;
+    private final String INPUTFILEROOTDIR = "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
+    private final String OUTPUTFILEROOTDIR =  "." +  File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
 
     public SolveResult solve(SolveInfo solveInfo, String type, String no, String INTEXT, String OUTTEXT) throws IOException, InterruptedException{
         if (checkSystemCallInCode(solveInfo.getCode())) {
@@ -60,22 +49,8 @@ public class SolveServicePython {
         writer.write(solveInfo.getCode());
         writer.close();
 
-        //ProcessBuilder pb;
         Process process;
-
-        ProcessBuilder pb = new ProcessBuilder("python3", "-u", "-W", "ignore::ResourceWarning", "-c", "import resource; resource.setrlimit(resource.RLIMIT_AS, ("+ solveInfo.getMemorySize() +" * 1024 * 1024, -1))", SOLUTIONFILEROOTDIR + "Solution.py");
-        //ProcessBuilder pb = new ProcessBuilder("python", SOLUTIONFILEROOTDIR + "Solution.py");
-        //Process process = pb.start();
-        //process.waitFor();
-
-//        if (process.exitValue() != 0) {
-//            deleteUserCode();
-//            return new SolveResult(0, "컴파일 에러", 0);
-//        }
-
-        //pb = new ProcessBuilder("python","-Xmx" + solveInfo.getMemorySize() + "m",SOLUTIONFILEROOTDIR, "main");
-        //pb = new ProcessBuilder("python", SOLUTIONFILEROOTDIR + "Solution.py", "main");
-        //pb = new ProcessBuilder("python", SOLUTIONFILEROOTDIR + "Solution.py");
+        ProcessBuilder pb = new ProcessBuilder("python3", SOLUTIONFILEROOTDIR + "Solution.py");
         pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + INTEXT));
 
         long startTime = System.nanoTime();
@@ -90,28 +65,6 @@ public class SolveServicePython {
 
         long endTime = System.nanoTime();
         long elapsedTime = endTime - startTime;
-
-//        if (!finished) {
-//            process.destroyForcibly();
-//            deleteUserCode();
-//            return new SolveResult((int)(elapsedTime / (long)1000000), "시간 초과", (int) finishMemory);
-//        }
-//
-//        // 메모리 초과 체크
-//        int exitValue = process.exitValue();
-//        if (exitValue != 0) {
-//            deleteUserCode();
-//            return new SolveResult((int)(elapsedTime / (long)1000000), "런타임 에러", (int) finishMemory);
-//        }
-
-        // 비교를 위해 코드의 출력을 StringBuilder로 합칩니다.
-//        StringBuilder output = new StringBuilder();
-//        try (Scanner sc = new Scanner(process.getInputStream())) { // 인풋스트림이 비어있다.. (파이썬 프로세스에 인풋을 넘겨주는 로직을 건들여야 할듯)
-//            System.out.println("채점 시작 !!!!");
-//            while (sc.hasNextLine()) {
-//                output.append(sc.nextLine()).append("\n");
-//            }
-//        }
 
         StringBuilder output = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -145,5 +98,4 @@ public class SolveServicePython {
             return new SolveResult((int) (elapsedTime / (long) 1000000), "틀렸습니다", (int) finishMemory);
         }
     }
-
 }

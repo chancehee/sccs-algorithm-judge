@@ -4,6 +4,7 @@ import com.sccs.solve.dto.SolveInfo;
 import com.sccs.solve.dto.SolveResult;
 import com.sccs.solve.service.SolveServiceJava;
 
+import com.sccs.solve.service.SolveServiceMacPython;
 import com.sccs.solve.service.SolveServicePython;
 import java.io.*;
 import java.nio.file.Files;
@@ -41,6 +42,7 @@ public class SolveController {
     private final SolveServiceJava solveServiceJava; // RequiredConstructor : final이나 @NonNull인 필드값만 파라미터로 받는 생성자를 만들어준다.
     private final SolveServicePython solveServicePython;
     private static PythonInterpreter interpreter;
+    private final SolveServiceMacPython solveServiceMacPython;
     @PostMapping("/python/submission")
     public ResponseEntity<?> solveWithPython(MultipartFile mfile , String type, String no, String memory, String runtime) throws IOException, InterruptedException {
         HashMap<String, Object> resultMap = new HashMap<>(); // 결과를 담는 자료구조
@@ -249,16 +251,17 @@ public class SolveController {
         String scriptPath = "/Users/leechanhee/Desktop/sccs-online-judge/src/main/test1.py";
         String memoryLimit = "512m";
 
-        ProcessBuilder builder = new ProcessBuilder("python", scriptPath);
+        ProcessBuilder pb = new ProcessBuilder("python3", scriptPath);
         try {
             System.out.println("실행 시작 ");
-            Process process = builder.start();
+            Process process = pb.start();
             System.out.println("실행 중...");
             BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
+            String line = "";
             while ((line = br.readLine()) != null) {
                 System.out.println(line);
             }
+            System.out.println("프로세스 종료");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -501,4 +504,83 @@ public class SolveController {
                 resultList
                 , HttpStatus.OK);
     }
+
+
+
+
+    @PostMapping("/postPython")
+    public ResponseEntity<?> postPython(MultipartFile mfile , String type, String no, String memory, String runtime) throws IOException, InterruptedException {
+        HashMap<String, Object> resultMap = new HashMap<>(); // 결과를 담는 자료구조
+        SolveInfo solveInfo = null; // 클라이언트가 넘긴 정보
+
+        runtime += 2;
+        try {
+            logger.info(mfile.getOriginalFilename()); // 클라이언트에게 넘어온 파일 이름 출력
+        } catch (Exception e) {
+            System.out.println("file is null [mintChoco Python]"); // 클라이언트에게 넘어온 파일이 null인 경우
+        }
+
+        logger.info("type, no, memory, runtime : {}" , type + " " + no + " " + memory + " " + runtime); // 클라이언트에서 넘어온 type, no, memory, runtime 출력
+
+        File convFile = new File( "."  + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.py"); // 리눅스 서버 절대 경로
+
+        convFile.createNewFile(); // 변환한 파일 위에서 지정한 경로에 생성
+        FileOutputStream fos = new FileOutputStream(convFile); // 파일 입력 출력 스트림
+        fos.write(mfile.getBytes()); // 파일에서 넘어온 정보 -> 내가 생성한 파일에 입력 (소스코드 넣기)
+        fos.close();
+
+        // 파일에서 String 추출
+        try {
+            Path path = Paths.get("."  + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.py");
+            Stream<String> lines = Files.lines(path);
+            String content = lines.collect(Collectors.joining(System.lineSeparator())); // 생성한 파일에서 String 형태를 라인 단위로 가져오기
+            logger.info("소스코드 : \n {}", content); // 한줄 단위로 소스코드 출력
+            solveInfo = new SolveInfo("chan", content, Integer.parseInt(memory), Integer.parseInt(runtime)); // 사용자아이디, 소스코드, 메모리, 실행시간 Dto에 세팅
+            lines.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        List<HashMap<String, Object>> resultList = new ArrayList<>();
+
+        String avgRuntime;
+        double sumRuntime = 0;
+        int sumMemory = 0;
+        int avgMemory;
+        boolean isAnswer = true;
+        for (int i=1; i<=5; i++) {
+            SolveResult solveResult = solveServiceMacPython.solve(solveInfo, type, no, "in"+i+".txt", "out"+i+".txt");
+
+            logger.info(" {} 번 문제 solveResult : {}", i, solveResult);
+            HashMap<String, Object> fiveMap = new HashMap<>();
+            fiveMap.put("result", solveResult.getResult()); // 채점 결과
+            fiveMap.put("runtime", String.format("%.2f",solveResult.getTime() / 1000.0));  // 실행 시간
+            fiveMap.put("memory", solveResult.getMemory()); // 메모리
+            fiveMap.put("problemNo", i+"번");
+
+            resultList.add(fiveMap);
+
+            if (!solveResult.getResult().equals("맞았습니다")) {
+                isAnswer = false;
+            }
+
+            sumRuntime += solveResult.getTime();
+            sumMemory  += solveResult.getMemory();
+        }
+        avgRuntime = String.format("%.2f",sumRuntime / 5.0 / 1000.0); // 소수점 2자리
+        avgMemory  = sumMemory / 5;
+        logger.info("평균 실행 시간 : {}", avgRuntime);
+        logger.info("정답 여부 : {}", isAnswer);
+        logger.info("평균 메모리 : {}", avgMemory);
+        HashMap<String, Object> tempMap = new HashMap<>();
+        tempMap.put("avgRuntime", avgRuntime);
+        tempMap.put("isAnswer", isAnswer);
+        tempMap.put("avgMemory", avgMemory);
+        resultList.add(tempMap);
+
+        return new ResponseEntity<>(
+                resultList
+                , HttpStatus.OK);
+    }
+
 }
