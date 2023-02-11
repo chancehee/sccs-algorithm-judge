@@ -41,11 +41,9 @@ public class SolveController {
     private final Logger logger = LoggerFactory.getLogger(SolveController.class);
     private final SolveServiceJava solveServiceJava; // RequiredConstructor : final이나 @NonNull인 필드값만 파라미터로 받는 생성자를 만들어준다.
     private final SolveServicePython solveServicePython;
-    private static PythonInterpreter interpreter;
     private final SolveServiceMacPython solveServiceMacPython;
     @PostMapping("/python/submission")
     public ResponseEntity<?> solveWithPython(MultipartFile mfile , String type, String no, String memory, String runtime) throws IOException, InterruptedException {
-        HashMap<String, Object> resultMap = new HashMap<>(); // 결과를 담는 자료구조
         SolveInfo solveInfo = null; // 클라이언트가 넘긴 정보
 
         runtime += 2;
@@ -57,10 +55,6 @@ public class SolveController {
 
         logger.info("type, no, memory, runtime : {}" , type + " " + no + " " + memory + " " + runtime); // 클라이언트에서 넘어온 type, no, memory, runtime 출력
 
-        // mfile to file (변환)
-        // 윈도우
-        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.py");
-        // 리눅스
         File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.py"); // 리눅스 서버 절대 경로
 
         convFile.createNewFile(); // 변환한 파일 위에서 지정한 경로에 생성
@@ -70,9 +64,6 @@ public class SolveController {
 
         // 파일에서 String 추출
         try {
-            // 윈도우
-            //Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.py");
-            // 리눅스
             Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.py");
             Stream<String> lines = Files.lines(path);
 
@@ -103,7 +94,6 @@ public class SolveController {
             fiveMap.put("memory", solveResult.getMemory()); // 메모리
             fiveMap.put("problemNo", i+"번");
 
-//            resultMap.put("data"+i, fiveMap); // 5개의 소스코드 채점 결과를 data1, data2, data3 .. 이런식으로 resulMap에 저장
             resultList.add(fiveMap);
 
             if (!solveResult.getResult().equals("맞았습니다")) {
@@ -123,36 +113,6 @@ public class SolveController {
         tempMap.put("isAnswer", isAnswer);
         tempMap.put("avgMemory", avgMemory);
         resultList.add(tempMap);
-
-
-
-//        interpreter = new PythonInterpreter(); // 파이썬 실행기
-//        interpreter.execfile("C:\\Users\\workspace\\sccs-online-judge\\src\\main\\resources\\usercode\\test.py"); // 실행시킬 파일경로 명시
-//
-//        Instant beforeTime = Instant.now(); // Time (1)
-//        System.gc();
-//        Runtime.getRuntime().gc(); // GC(1)
-//
-//        PyFunction pyFunction = interpreter.get("main", PyFunction.class); // main이라는 함수 실행
-//        PyObject pyObject = pyFunction.__call__();
-//
-//        System.gc();
-//        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory(); // GC(2)
-//
-//        Instant afterTime = Instant.now(); // Time(2)
-//
-//        long secDiffTime = Duration.between(beforeTime, afterTime).toNanos(); // Time(3)
-//
-//        System.out.println("실행 시간 : " + ((double)secDiffTime) / 1000000000); // Time(4)
-//        System.out.println("[GC]사용 메모리 : " + (usedMemory) + " kb"); // 1kb = 0.001 mb // GC(3)
-//        System.out.println(pyObject.toString());
-//
-//
-//        SolveResult solveResult = new SolveResult((int) ((secDiffTime) / 1000000000), "정답", (int) usedMemory);
-//
-//        resultMap.put("result", solveResult.getResult());
-//        resultMap.put("runtime", solveResult.getTime());
-//        resultMap.put("memory", solveResult.getMemory());
 
         return new ResponseEntity<>(
                 resultList
@@ -245,27 +205,6 @@ public class SolveController {
                 , HttpStatus.OK);
     }
 
-//    @GetMapping("/getPython")
-//    public String getPy() {
-//        String scriptPath = "/Users/leechanhee/Desktop/sccs-online-judge/src/main/test1.py";
-//        String memoryLimit = "512m";
-//
-//        ProcessBuilder pb = new ProcessBuilder("python3", scriptPath);
-//        try {
-//            System.out.println("실행 시작 ");
-//            Process process = pb.start();
-//            System.out.println("실행 중...");
-//            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//            String line = "";
-//            while ((line = br.readLine()) != null) {
-//                System.out.println(line);
-//            }
-//            System.out.println("프로세스 종료");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return "성공";
-//    }
 
     @PostMapping("/java/submission") // 5개 테스트 케이스 채점
     public ResponseEntity<?> solveWithJava(MultipartFile mfile , String type, String no, String memory, String runtime) throws IOException, InterruptedException {
@@ -281,21 +220,8 @@ public class SolveController {
             return new ResponseEntity<>(resultMap, HttpStatus.NOT_FOUND); // 404
         }
 
-//        type     = "1"; // 클라이언트에게 넘겨받을 값
-//        no       = "1"; // 문제 번호
-//        memory   = 256; // 메모리
-//        runtime   = 2; // 시간
-
-//        보내줄것 3개 : result(String), memory(int), runtime(int)
-
-
-
         logger.info("type, no, memory, runtime : {}" , type + " " + no + " " + memory + " " + runtime); // 클라이언트에서 넘어온 type, no, memory, runtime 출력
 
-        // mfile to file (변환)
-        // 윈도우
-        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
-        // 리눅스
         File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
         //File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "usercode" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
         logger.info("리눅스 서버 파일 존재 위치 절대 경로 : {}", convFile.getPath());
@@ -306,9 +232,6 @@ public class SolveController {
 
         // 파일에서 String 추출
         try {
-            // 윈도우
-            //Path path = Paths.get(".\\src\\main\\resources\\file\\Solution.java");
-            // 리눅스
             Path path = Paths.get(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java");
             Stream<String> lines = Files.lines(path);
 
@@ -320,12 +243,6 @@ public class SolveController {
             e.printStackTrace();
         }
 
-        // SolveResult solveResult = solveServiceJava.solve(solveInfo, type, no); // 사용자 소스코드 Dto 정보로 문제풀이 -> 결과 받아오기
-
-//        resultMap.put("result", solveResult.getResult()); // 채점 결과
-//        resultMap.put("runtime", solveResult.getTime());  // 실행 시간
-//        resultMap.put("memory", solveResult.getMemory()); // 메모리
-
         List<HashMap<String, Object>> resultList = new ArrayList<>();
 
         // 여러개 인풋 파일 돌리는 로직
@@ -336,7 +253,6 @@ public class SolveController {
         boolean isAnswer = true;
         for (int i=1; i<=5; i++) {
             SolveResult solveResult = solveServiceJava.solve(solveInfo, type, no, "in"+i+".txt", "out"+i+".txt");
-
             logger.info(" {} 번 문제 solveResult : {}", i, solveResult);
 
             HashMap<String, Object> fiveMap = new HashMap<>();
@@ -345,7 +261,6 @@ public class SolveController {
             fiveMap.put("memory", solveResult.getMemory()); // 메모리
             fiveMap.put("problemNo", i+"번");
 
-//            resultMap.put("data"+i, fiveMap); // 5개의 소스코드 채점 결과를 data1, data2, data3 .. 이런식으로 resulMap에 저장
             resultList.add(fiveMap);
 
             if (!solveResult.getResult().equals("맞았습니다")) {
@@ -389,9 +304,6 @@ public class SolveController {
 
         logger.info("type, no, memory, runtime : {}" , type + " " + no + " " + memory + " " + runtime); // 클라이언트에서 넘어온 type, no, memory, runtime 출력
 
-        // mfile to file (변환)
-        // 윈도우
-        //File convFile = new File(".\\src\\main\\resources\\file\\Solution.java");
         // 리눅스
         File convFile = new File(File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator + "Solution.java"); // 리눅스 서버 절대 경로
         logger.info("리눅스 서버 파일 존재 위치 절대 경로 : {}", convFile.getPath());
@@ -474,7 +386,8 @@ public class SolveController {
         try {
             logger.info(mfile.getOriginalFilename()); // 클라이언트에게 넘어온 파일 이름 출력
         } catch (Exception e) {
-            System.out.println("file is null [mintChoco Python]"); // 클라이언트에게 넘어온 파일이 null인 경우
+            resultMap.put("message", "file is null");
+            return new ResponseEntity<>(resultMap, HttpStatus.NOT_FOUND);
         }
 
         logger.info("type, no, memory, runtime : {}" , type + " " + no + " " + memory + " " + runtime); // 클라이언트에서 넘어온 type, no, memory, runtime 출력
@@ -538,6 +451,49 @@ public class SolveController {
         return new ResponseEntity<>(
                 resultList
                 , HttpStatus.OK);
+    }
+
+
+    @GetMapping("/py")
+    public void py() throws IOException, InterruptedException {
+        List<String> commands = new ArrayList<>();
+        commands.add("python3");
+        commands.add("/Users/leechanhee/Desktop/solve.py");
+        commands.add("Solution");
+
+        ProcessBuilder pb = new ProcessBuilder(commands);
+        pb.redirectInput(new File("/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/1/1/input/in1.txt"));
+        Process process = pb.start();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        StringBuilder output = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            output.append(line).append("\n");
+        }
+
+
+        // 실제 정답도 동일한 과정을 거칩니다.
+        StringBuilder expectedOutput = new StringBuilder();
+        //try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + "\\" + no + "\\output\\" + "out1.txt"))) {
+        try (Scanner sc = new Scanner(new File("/Users/leechanhee/Desktop/sccs-online-judge/src/main/resources/1/1/output/out1.txt"))) {
+            while (sc.hasNextLine()) {
+                expectedOutput.append(sc.nextLine()).append("\n");
+            }
+        }
+
+        System.out.print("결과 : " + output.toString());
+        System.out.print("예상 결과 : " + expectedOutput.toString());
+
+        if (output.toString().equals(expectedOutput.toString())) {
+            System.out.println("맞음");
+        }
+        else {
+            System.out.println("틀림");
+        }
+
+        process.waitFor();
+
     }
 
 }

@@ -76,12 +76,6 @@ public class SolveServiceJava {
         // redirectInput을 이용하면 Solution에 redirection을 전달할 수 있습니다.
         // input.txt = 리다이렉션의 매개변수
         pb = new ProcessBuilder("java","-Xmx" + solveInfo.getMemorySize() + "m", "-cp",SOLUTIONFILEROOTDIR, "Solution");
-        //pb.redirectInput(new File(INPUTFILEROOTDIR + type + "\\" + no + "\\input\\" + "in1.txt"));
-
-        // 절대 경로로 인풋 파일 1개 돌리기
-        // pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + "in1.txt"));
-
-        // 절대 경로로 인풋 파일 파라미터로 받아서 1개 돌리기
         pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + INTEXT));
 
         long startTime = System.nanoTime();

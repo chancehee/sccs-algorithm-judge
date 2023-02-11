@@ -4,9 +4,6 @@ import com.sccs.solve.dto.SolveInfo;
 import com.sccs.solve.dto.SolveResult;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.ProcessBuilder.Redirect;
-//import org.python.jline.internal.InputStreamReader;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -19,10 +16,6 @@ import java.util.regex.Pattern;
 
 @Service
 public class SolveServicePython {
-    // 윈도우
-//    private final String SOLUTIONFILEROOTDIR = ".\\src\\main\\resources\\usercode\\";
-//    private final String INPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / intput /
-//    private final String OUTPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / output /
     private final String SOLUTIONFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator;
     private final String INPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
     private final String OUTPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
@@ -56,32 +49,26 @@ public class SolveServicePython {
     public SolveResult codeExecutor(SolveInfo solveInfo, String type, String no, String INTEXT, String OUTTEXT) throws IOException, InterruptedException{
         // Solution.java 파일을 생성하고 받아온 코드를 파일에 적습니다.
         File file = new File(SOLUTIONFILEROOTDIR  + "Solution.py");
+
         FileWriter writer = new FileWriter(file);
         writer.write(solveInfo.getCode());
         writer.close();
 
-        //ProcessBuilder pb;
-        Process process;
+        ProcessBuilder pb = new ProcessBuilder("python3", "-m", "py_compile",  SOLUTIONFILEROOTDIR + "Solution.py");
+        Process process = pb.start();
+        process.waitFor(); // 현재 실행한 프로세스가 종료될 때까지 블록 처리
 
-        ProcessBuilder pb = new ProcessBuilder("python3", "-u", "-W", "ignore::ResourceWarning", "-c", "import resource; resource.setrlimit(resource.RLIMIT_AS, ("+ solveInfo.getMemorySize() +" * 1024 * 1024, -1))", SOLUTIONFILEROOTDIR + "Solution.py");
-        //ProcessBuilder pb = new ProcessBuilder("python", SOLUTIONFILEROOTDIR + "Solution.py");
-        //Process process = pb.start();
-        //process.waitFor();
+        if (process.exitValue() != 0) {
+            deleteUserCode();
+            return new SolveResult(0, "컴파일 에러", 0);
+        }
 
-//        if (process.exitValue() != 0) {
-//            deleteUserCode();
-//            return new SolveResult(0, "컴파일 에러", 0);
-//        }
-
-        //pb = new ProcessBuilder("python","-Xmx" + solveInfo.getMemorySize() + "m",SOLUTIONFILEROOTDIR, "main");
-        //pb = new ProcessBuilder("python", SOLUTIONFILEROOTDIR + "Solution.py", "main");
-        //pb = new ProcessBuilder("python", SOLUTIONFILEROOTDIR + "Solution.py");
+        pb = new ProcessBuilder("python3", "-u", "-W", "ignore::ResourceWarning", "-c", "import resource; resource.setrlimit(resource.RLIMIT_AS, ("+ solveInfo.getMemorySize() +" * 1024 * 1024, -1))", SOLUTIONFILEROOTDIR + "Solution.py", "Solution");
         pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + INTEXT));
 
         long startTime = System.nanoTime();
 
         process = pb.start();
-        process.waitFor(); // 현재 실행한 프로세스가 종료될 때까지 블록 처리
 
         long finishMemory = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024 /2);
 
@@ -91,33 +78,24 @@ public class SolveServicePython {
         long endTime = System.nanoTime();
         long elapsedTime = endTime - startTime;
 
-//        if (!finished) {
-//            process.destroyForcibly();
-//            deleteUserCode();
-//            return new SolveResult((int)(elapsedTime / (long)1000000), "시간 초과", (int) finishMemory);
-//        }
-//
-//        // 메모리 초과 체크
-//        int exitValue = process.exitValue();
-//        if (exitValue != 0) {
-//            deleteUserCode();
-//            return new SolveResult((int)(elapsedTime / (long)1000000), "런타임 에러", (int) finishMemory);
-//        }
+        if (!finished) {
+            process.destroyForcibly();
+            deleteUserCode();
+            return new SolveResult((int)(elapsedTime / (long)1000000), "시간 초과", (int) finishMemory);
+        }
 
-        // 비교를 위해 코드의 출력을 StringBuilder로 합칩니다.
-//        StringBuilder output = new StringBuilder();
-//        try (Scanner sc = new Scanner(process.getInputStream())) { // 인풋스트림이 비어있다.. (파이썬 프로세스에 인풋을 넘겨주는 로직을 건들여야 할듯)
-//            System.out.println("채점 시작 !!!!");
-//            while (sc.hasNextLine()) {
-//                output.append(sc.nextLine()).append("\n");
-//            }
-//        }
+        // 메모리 초과 체크
+        int exitValue = process.exitValue();
+        if (exitValue != 0) {
+            deleteUserCode();
+            return new SolveResult((int)(elapsedTime / (long)1000000), "런타임 에러", (int) finishMemory);
+        }
 
         StringBuilder output = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             String line;
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
+                output.append(line).append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -125,10 +103,8 @@ public class SolveServicePython {
 
         // 실제 정답도 동일한 과정을 거칩니다.
         StringBuilder expectedOutput = new StringBuilder();
-        //try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + "\\" + no + "\\output\\" + "out1.txt"))) {
         try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + File.separator + no + File.separator + "output" + File.separator + OUTTEXT))) {
             while (sc.hasNextLine()) {
-                //System.out.println("무언가 더하는 중 ");
                 expectedOutput.append(sc.nextLine()).append("\n");
             }
         }
