@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SolveServiceJava {
-    private final String SOLUTIONFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "usercode" + File.separator;
+    private final String SOLUTIONFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator;
     private final String INPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
     private final String OUTPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
 
@@ -68,7 +68,6 @@ public class SolveServiceJava {
         // java = 명령어 (Executable file) <<<<<<<<<<<<<
         // -Xmx128m Solution = java라는 명령어의 매개변수 < X
         // redirectInput을 이용하면 Solution에 redirection을 전달할 수 있습니다.
-        // input.txt = 리다이렉션의 매개변수
         pb = new ProcessBuilder("java","-Xmx" + solveInfo.getMemorySize() + "m", "-cp",SOLUTIONFILEROOTDIR, "Solution");
         pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + INTEXT));
 
@@ -109,7 +108,6 @@ public class SolveServiceJava {
 
         // 실제 정답도 동일한 과정을 거칩니다.
         StringBuilder expectedOutput = new StringBuilder();
-        //try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + "\\" + no + "\\output\\" + "out1.txt"))) {
         try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + File.separator + no + File.separator + "output" + File.separator + OUTTEXT))) {
             while (sc.hasNextLine()) {
                 expectedOutput.append(sc.nextLine()).append("\n");
