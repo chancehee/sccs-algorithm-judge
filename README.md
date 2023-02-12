@@ -3,7 +3,7 @@
 - 2가지 언어를 지원합니다. (Java, Python)  
 
 
-# 메뉴얼  
+# 매뉴얼  
 ## Java  
 ### https://sccs.kr/solve/java/submission  
     5개 테스트케이스 채점
