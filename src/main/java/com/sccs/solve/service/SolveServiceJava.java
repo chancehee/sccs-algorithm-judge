@@ -13,14 +13,8 @@ import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
 
-// "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file"
 @Service
 public class SolveServiceJava {
-    // 윈도우
-//    private final String SOLUTIONFILEROOTDIR = ".\\src\\main\\resources\\usercode\\";
-//    private final String INPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / intput /
-//    private final String OUTPUTFILEROOTDIR = ".\\src\\main\\resources\\"; // 유형 / 문제 번호 / output /
-    // 리눅스
     private final String SOLUTIONFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "usercode" + File.separator;
     private final String INPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
     private final String OUTPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
@@ -91,6 +85,7 @@ public class SolveServiceJava {
         long endTime = System.nanoTime();
         long elapsedTime = endTime - startTime;
 
+        // 시간 초과 체크
         if (!finished) {
             process.destroyForcibly();
             deleteUserCode();

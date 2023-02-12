@@ -54,16 +54,17 @@ public class SolveServicePython {
         writer.write(solveInfo.getCode());
         writer.close();
 
+        // 컴파일
         ProcessBuilder pb = new ProcessBuilder("python3", "-m", "py_compile",  SOLUTIONFILEROOTDIR + "Solution.py");
         Process process = pb.start();
         process.waitFor(); // 현재 실행한 프로세스가 종료될 때까지 블록 처리
 
+        // 컴파일 체크
         if (process.exitValue() != 0) {
             deleteUserCode();
             return new SolveResult(0, "컴파일 에러", 0);
         }
 
-        //pb = new ProcessBuilder("python3", "-u", "-W", "ignore::ResourceWarning", "-c", "import resource; resource.setrlimit(resource.RLIMIT_AS, ("+ solveInfo.getMemorySize() +" * 1024 * 1024, -1))", SOLUTIONFILEROOTDIR + "Solution.py", "Solution");
         pb = new ProcessBuilder("python3", SOLUTIONFILEROOTDIR + "Solution.py", "Solution");
         pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + INTEXT));
 
@@ -71,7 +72,7 @@ public class SolveServicePython {
 
         process = pb.start();
 
-        long finishMemory = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024 /2);
+        long finishMemory = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024);
 
         // 만약 문제에서 설정된 시간제한을 초과한다면 이를 체크하여 코드를 강제로 종료합니다.
         boolean finished = process.waitFor(solveInfo.getTimeLimit(), TimeUnit.SECONDS);
@@ -79,6 +80,7 @@ public class SolveServicePython {
         long endTime = System.nanoTime();
         long elapsedTime = endTime - startTime;
 
+        // 시간 초과 체크
         if (!finished) {
             process.destroyForcibly();
             deleteUserCode();
@@ -92,6 +94,7 @@ public class SolveServicePython {
             return new SolveResult((int)(elapsedTime / (long)1000000), "런타임 에러", (int) finishMemory);
         }
 
+        // 실행 결과 값
         StringBuilder output = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             String line;
@@ -102,7 +105,7 @@ public class SolveServicePython {
             e.printStackTrace();
         }
 
-        // 실제 정답도 동일한 과정을 거칩니다.
+        // 실제 정답
         StringBuilder expectedOutput = new StringBuilder();
         try (Scanner sc = new Scanner(new File(OUTPUTFILEROOTDIR + type + File.separator + no + File.separator + "output" + File.separator + OUTTEXT))) {
             while (sc.hasNextLine()) {
@@ -110,11 +113,9 @@ public class SolveServicePython {
             }
         }
 
+        // 실행 결과와 실제 정답 비교
         if (output.toString().equals(expectedOutput.toString())) {
             deleteUserCode();
-            System.out.println(output);
-            System.out.println(expectedOutput);
-            System.out.println();
             return new SolveResult((int) (elapsedTime / (long) 1000000), "맞았습니다", (int) finishMemory);
         }
         else {
