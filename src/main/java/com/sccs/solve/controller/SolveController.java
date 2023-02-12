@@ -91,7 +91,12 @@ public class SolveController {
             logger.info(" {} 번 문제 solveResult : {}", i, solveResult);
 
             HashMap<String, Object> fiveMap = new HashMap<>();
-            fiveMap.put("result", solveResult.getResult()); // 채점 결과
+            if (solveResult.getResult().equals("맞았습니다")) {
+                fiveMap.put("result", true);
+            } else {
+                fiveMap.put("result", false);
+            }
+            fiveMap.put("message", solveResult.getResult()); // 채점 결과
             fiveMap.put("runtime", String.format("%.2f",solveResult.getTime() / 1000.0));  // 실행 시간
             fiveMap.put("memory", solveResult.getMemory()); // 메모리
             fiveMap.put("problemNo", i+"번");
@@ -105,19 +110,25 @@ public class SolveController {
             sumRuntime += solveResult.getTime();
             sumMemory  += solveResult.getMemory();
         }
+
+        resultMap.put("resultList", resultList);
+
         avgRuntime = String.format("%.2f",sumRuntime / 5.0 / 1000.0); // 소수점 2자리
         avgMemory  = sumMemory / 5;
         logger.info("평균 실행 시간 : {}", avgRuntime);
         logger.info("정답 여부 : {}", isAnswer);
         logger.info("평균 메모리 : {}", avgMemory);
-        HashMap<String, Object> avgMap = new HashMap<>();
-        avgMap.put("avgRuntime", avgRuntime);
-        avgMap.put("isAnswer", isAnswer);
-        avgMap.put("avgMemory", avgMemory);
-        resultList.add(avgMap);
+//        HashMap<String, Object> avgMap = new HashMap<>();
+//        avgMap.put("avgRuntime", avgRuntime);
+//        avgMap.put("isAnswer", isAnswer);
+//        avgMap.put("avgMemory", avgMemory);
+//        resultList.add(avgMap);
+        resultMap.put("avgRuntime", avgRuntime);
+        resultMap.put("isAnswer", isAnswer);
+        resultMap.put("avgMemory", avgMemory);
 
         return new ResponseEntity<>(
-                resultList
+                resultMap
                 , HttpStatus.OK);
     }
 
@@ -171,7 +182,12 @@ public class SolveController {
             logger.info(" {} 번 문제 solveResult : {}", i, solveResult);
 
             HashMap<String, Object> fiveMap = new HashMap<>();
-            fiveMap.put("result", solveResult.getResult()); // 채점 결과
+            if (solveResult.getResult().equals("맞았습니다")) {
+                fiveMap.put("result", true);
+            } else {
+                fiveMap.put("result", false);
+            }
+            fiveMap.put("message", solveResult.getResult()); // 채점 결과
             fiveMap.put("runtime", String.format("%.2f",solveResult.getTime() / 1000.0));  // 실행 시간
             fiveMap.put("memory", solveResult.getMemory()); // 메모리
             fiveMap.put("problemNo", i+"번");
@@ -185,19 +201,25 @@ public class SolveController {
             sumRuntime += solveResult.getTime();
             sumMemory  += solveResult.getMemory();
         }
-//        avgRuntime = String.format("%.2f",sumRuntime / 3.0 / 1000.0); // 소수점 2자리
-//        avgMemory  = sumMemory / 3;
-//        logger.info("평균 실행 시간 : {}", avgRuntime);
-//        logger.info("정답 여부 : {}", isAnswer);
-//        logger.info("평균 메모리 : {}", avgMemory);
+
+        resultMap.put("resultList", resultList);
+
+        avgRuntime = String.format("%.2f",sumRuntime / 3.0 / 1000.0); // 소수점 2자리
+        avgMemory  = sumMemory / 3;
+        logger.info("평균 실행 시간 : {}", avgRuntime);
+        logger.info("정답 여부 : {}", isAnswer);
+        logger.info("평균 메모리 : {}", avgMemory);
 //        HashMap<String, Object> avgMap = new HashMap<>();
 //        avgMap.put("avgRuntime", avgRuntime);
 //        avgMap.put("isAnswer", isAnswer);
 //        avgMap.put("avgMemory", avgMemory);
         //resultList.add(avgMap);
+        resultMap.put("avgRuntime", avgRuntime);
+        resultMap.put("isAnswer", isAnswer);
+        resultMap.put("avgMemory", avgMemory);
 
         return new ResponseEntity<>(
-                resultList
+                resultMap
                 , HttpStatus.OK);
     }
 
