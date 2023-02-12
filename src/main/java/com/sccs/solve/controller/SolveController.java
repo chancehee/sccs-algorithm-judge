@@ -354,6 +354,10 @@ public class SolveController {
             fiveMap.put("runtime", String.format("%.2f",solveResult.getTime() / 1000.0));  // 실행 시간
             fiveMap.put("memory", solveResult.getMemory()); // 메모리
 
+            if (!solveResult.getResult().equals("맞았습니다")) {
+                isAnswer = false;
+            }
+
             resultList.add(fiveMap);
 
             sumRuntime += solveResult.getTime();
