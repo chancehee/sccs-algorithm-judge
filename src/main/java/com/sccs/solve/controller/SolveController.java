@@ -253,7 +253,7 @@ public class SolveController {
             logger.info(" {} 번 문제 solveResult : {}", i, solveResult);
 
             HashMap<String, Object> fiveMap = new HashMap<>();
-            if (solveResult.getResult().equals("맞았습니다.")) {
+            if (solveResult.getResult().equals("맞았습니다")) {
                 fiveMap.put("result", true);
             } else {
                 fiveMap.put("result", false);
@@ -345,7 +345,7 @@ public class SolveController {
             logger.info(" {} 번 문제 solveResult : {}", i, solveResult);
 
             HashMap<String, Object> fiveMap = new HashMap<>();
-            if (solveResult.getResult().equals("맞았습니다.")) {
+            if (solveResult.getResult().equals("맞았습니다")) {
                 fiveMap.put("result", true);
             } else {
                 fiveMap.put("result", false);
