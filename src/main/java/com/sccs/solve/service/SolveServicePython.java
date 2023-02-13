@@ -119,6 +119,7 @@ public class SolveServicePython {
         // 실행 결과와 실제 정답 비교
         if (output.toString().equals(expectedOutput.toString())) {
             deleteUserCode();
+            logger.debug("=================================================================");
             logger.debug("=========================SUCCESS=================================");
             logger.debug("judge result : {}", output);
             logger.debug("expected result : {}", expectedOutput);
