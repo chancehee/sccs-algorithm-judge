@@ -1,5 +1,6 @@
 package com.sccs.solve.service;
 
+import com.sccs.solve.controller.SolveController;
 import com.sccs.solve.dto.SolveInfo;
 import com.sccs.solve.dto.SolveResult;
 
@@ -11,10 +12,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SolveServiceJava {
+    private final Logger logger = LoggerFactory.getLogger(SolveServiceJava.class);
     private final String SOLUTIONFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator;
     private final String INPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
     private final String OUTPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
@@ -116,10 +120,19 @@ public class SolveServiceJava {
 
         if (output.toString().equals(expectedOutput.toString())) {
             deleteUserCode();
+            logger.debug("=========================SUCCESS=================================");
+            logger.debug("judge result : {}", output);
+            logger.debug("expected result : {}", expectedOutput);
+            logger.debug("==========================================================");
             return new SolveResult((int) (elapsedTime / (long) 1000000), "맞았습니다", (int) finishMemory);
         }
         else {
             deleteUserCode();
+            logger.debug("==============================================================");
+            logger.debug("=========================FAIL=================================");
+            logger.debug("judge result : {}", output);
+            logger.debug("expected result : {}", expectedOutput);
+            logger.debug("==========================================================");
             return new SolveResult((int) (elapsedTime / (long) 1000000), "틀렸습니다", (int) finishMemory);
         }
     }
