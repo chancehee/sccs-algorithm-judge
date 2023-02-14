@@ -37,7 +37,7 @@ public class SolveController {
     private final SolveServiceJava solveServiceJava; // RequiredConstructor : final이나 @NonNull인 필드값만 파라미터로 받는 생성자를 만들어준다.
     private final SolveServicePython solveServicePython;
     private final ParamCheckUtil paramCheckUtil;
-    private final String SUCCESS = "맞았습니다.";
+    private final String SUCCESS = "맞았습니다";
     private final String MESSAGE = "message";
 
     // EC2 경로
