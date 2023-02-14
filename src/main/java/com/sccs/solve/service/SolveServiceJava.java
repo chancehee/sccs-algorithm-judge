@@ -19,9 +19,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class SolveServiceJava {
     private final Logger logger = LoggerFactory.getLogger(SolveServiceJava.class);
+    // EC2
     private final String SOLUTIONFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge" + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator;
     private final String INPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
     private final String OUTPUTFILEROOTDIR = File.separator + "home" + File.separator + "project" + File.separator + "judgeonline" + File.separator + "sccs-online-judge"+ File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
+
+    // Window
+//    private final String SOLUTIONFILEROOTDIR = "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator + "file" + File.separator;
+//    private final String INPUTFILEROOTDIR =  "." +  File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
+//    private final String OUTPUTFILEROOTDIR =  "." + File.separator + "src" + File.separator + "main" + File.separator+ "resources" + File.separator;
+
+
 
     public SolveResult solve(SolveInfo solveInfo, String type, String no, String INTEXT, String OUTTEXT) throws IOException, InterruptedException{
         if (checkSystemCallInCode(solveInfo.getCode())) {
@@ -116,6 +124,8 @@ public class SolveServiceJava {
             while (sc.hasNextLine()) {
                 expectedOutput.append(sc.nextLine()).append("\n");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         if (output.toString().equals(expectedOutput.toString())) {
@@ -123,16 +133,13 @@ public class SolveServiceJava {
             logger.debug("=========================SUCCESS=================================");
             logger.debug("judge result : {}", output);
             logger.debug("expected result : {}", expectedOutput);
-            logger.debug("==========================================================");
             return new SolveResult((int) (elapsedTime / (long) 1000000), "맞았습니다", (int) finishMemory);
         }
         else {
             deleteUserCode();
-            logger.debug("==============================================================");
             logger.debug("=========================FAIL=================================");
             logger.debug("judge result : {}", output);
             logger.debug("expected result : {}", expectedOutput);
-            logger.debug("==========================================================");
             return new SolveResult((int) (elapsedTime / (long) 1000000), "틀렸습니다", (int) finishMemory);
         }
     }
