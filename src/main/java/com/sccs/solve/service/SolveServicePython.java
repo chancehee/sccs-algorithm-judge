@@ -85,7 +85,7 @@ public class SolveServicePython {
 
         process = pb.start();
 
-        long finishMemory = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024);
+        long finishMemory = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024 / 3);
 
         // 만약 문제에서 설정된 시간제한을 초과한다면 이를 체크하여 코드를 강제로 종료합니다.
         boolean finished = process.waitFor(solveInfo.getTimeLimit(), TimeUnit.SECONDS);
