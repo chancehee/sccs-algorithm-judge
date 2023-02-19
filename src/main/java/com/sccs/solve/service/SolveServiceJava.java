@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,17 +49,19 @@ public class SolveServiceJava {
         return (matcher.find());
     }
 
-    public void deleteUserCode() {
-        File file = new File(SOLUTIONFILEROOTDIR + "Solution.java");
+    public void deleteUserCode(String uuid) {
+        File file = new File(SOLUTIONFILEROOTDIR + uuid + "Solution.java");
         if (file != null)
             file.delete();
-        file = new File(SOLUTIONFILEROOTDIR + "Solution.class");
+        file = new File(SOLUTIONFILEROOTDIR + uuid + "Solution.class");
         if (file != null)
             file.delete();
     }
     public SolveResult codeExecutor(SolveInfo solveInfo, String type, String no, String INTEXT, String OUTTEXT) throws IOException, InterruptedException{
         // Solution.java 파일을 생성하고 받아온 코드를 파일에 적습니다.
-        File file = new File(SOLUTIONFILEROOTDIR  + "Solution.java");
+        UUID uuid = UUID.randomUUID();
+        //File file = new File(SOLUTIONFILEROOTDIR  + "Solution.java");
+        File file = new File(SOLUTIONFILEROOTDIR  + uuid + "Solution.java");
 
         FileWriter writer = new FileWriter(file);
         writer.write(solveInfo.getCode());
@@ -66,12 +69,12 @@ public class SolveServiceJava {
 
         // 사용자가 제출한 Solution.java를 컴파일합니다.
         // Shell Script : javac Solution.java
-        ProcessBuilder pb = new ProcessBuilder("javac", SOLUTIONFILEROOTDIR + "Solution.java");
+        ProcessBuilder pb = new ProcessBuilder("javac", SOLUTIONFILEROOTDIR + uuid + "Solution.java");
         Process process = pb.start();
         process.waitFor();
 
         if (process.exitValue() != 0) {
-            deleteUserCode();
+            deleteUserCode(uuid + "");
             return new SolveResult(0, "컴파일 에러", 0);
         }
 
@@ -80,7 +83,7 @@ public class SolveServiceJava {
         // java = 명령어 (Executable file) <<<<<<<<<<<<<
         // -Xmx128m Solution = java라는 명령어의 매개변수 < X
         // redirectInput을 이용하면 Solution에 redirection을 전달할 수 있습니다.
-        pb = new ProcessBuilder("java","-Xmx" + solveInfo.getMemorySize() + "m", "-cp",SOLUTIONFILEROOTDIR, "Solution");
+        pb = new ProcessBuilder("java","-Xmx" + solveInfo.getMemorySize() + "m", "-cp",SOLUTIONFILEROOTDIR, uuid + "Solution");
         pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + INTEXT));
 
         long startTime = System.nanoTime();
@@ -99,14 +102,14 @@ public class SolveServiceJava {
         // 시간 초과 체크
         if (!finished) {
             process.destroyForcibly();
-            deleteUserCode();
+            deleteUserCode(uuid + "");
             return new SolveResult((int)(elapsedTime / (long)1000000), "시간 초과", (int) finishMemory);
         }
 
         // 메모리 초과 체크
         int exitValue = process.exitValue();
         if (exitValue != 0) {
-            deleteUserCode();
+            deleteUserCode(uuid + "");
             return new SolveResult((int)(elapsedTime / (long)1000000), "런타임 에러", (int) finishMemory);
         }
 
@@ -129,17 +132,11 @@ public class SolveServiceJava {
         }
 
         if (output.toString().equals(expectedOutput.toString())) {
-            deleteUserCode();
-            logger.debug("=========================SUCCESS=================================");
-            logger.debug("judge result : {}", output);
-            logger.debug("expected result : {}", expectedOutput);
+            deleteUserCode(uuid + "");
             return new SolveResult((int) (elapsedTime / (long) 1000000), "맞았습니다", (int) finishMemory);
         }
         else {
-            deleteUserCode();
-            logger.debug("=========================FAIL=================================");
-            logger.debug("judge result : {}", output);
-            logger.debug("expected result : {}", expectedOutput);
+            deleteUserCode(uuid + "");
             return new SolveResult((int) (elapsedTime / (long) 1000000), "틀렸습니다", (int) finishMemory);
         }
     }

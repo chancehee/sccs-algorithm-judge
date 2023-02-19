@@ -251,10 +251,12 @@ public class SolveController {
             Stream<String> lines = Files.lines(path);
             String content = lines.collect(Collectors.joining(System.lineSeparator())); // 생성한 파일에서 String 형태를 라인 단위로 가져오기
             logger.info("소스코드 : \n {}", content); // 한줄 단위로 소스코드 출력
+            convFile.delete();
             solveInfo = new SolveInfo("chan", content, Integer.parseInt(memory), Integer.parseInt(runtime)); // 사용자아이디, 소스코드, 메모리, 실행시간 Dto에 세팅
             lines.close();
         } catch (IOException e) {
             e.printStackTrace();
+            convFile.delete();
             resultMap.put(MESSAGE, "I/O ERROR");
             return new ResponseEntity<>(resultMap, HttpStatus.INTERNAL_SERVER_ERROR); // 500
         }
