@@ -83,7 +83,7 @@ public class SolveServiceJava {
         // java = 명령어 (Executable file) <<<<<<<<<<<<<
         // -Xmx128m Solution = java라는 명령어의 매개변수 < X
         // redirectInput을 이용하면 Solution에 redirection을 전달할 수 있습니다.
-        pb = new ProcessBuilder("java","-Xmx" + solveInfo.getMemorySize() + "m", "-cp",SOLUTIONFILEROOTDIR, uuid + "Solution");
+        pb = new ProcessBuilder("java","-Xmx" + solveInfo.getMemorySize() + "m", "-cp",SOLUTIONFILEROOTDIR, "Solution");
         pb.redirectInput(new File(INPUTFILEROOTDIR + type + File.separator + no + File.separator + "input" + File.separator + INTEXT));
 
         long startTime = System.nanoTime();
