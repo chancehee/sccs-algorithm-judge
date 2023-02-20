@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,31 +51,34 @@ public class SolveServicePython {
         return (matcher.find());
     }
 
-    public void deleteUserCode() {
-        File file = new File(SOLUTIONFILEROOTDIR + "Solution.py");
+    public void deleteUserCode(String uuid) {
+        File file = new File(SOLUTIONFILEROOTDIR + uuid +  "Solution.py");
         if (file != null)
             file.delete();
-        file = new File(SOLUTIONFILEROOTDIR + "Solution.class");
+        file = new File(SOLUTIONFILEROOTDIR + uuid + "Solution.class");
         if (file != null)
             file.delete();
     }
 
     public SolveResult codeExecutor(SolveInfo solveInfo, String type, String no, String INTEXT, String OUTTEXT) throws IOException, InterruptedException{
         // Solution.java 파일을 생성하고 받아온 코드를 파일에 적습니다.
-        File file = new File(SOLUTIONFILEROOTDIR  + "Solution.py");
+        //File file = new File(SOLUTIONFILEROOTDIR  + "Solution.py");
+
+        UUID uuid = UUID.randomUUID();
+        File file = new File(SOLUTIONFILEROOTDIR  + uuid + "Solution.py");
 
         FileWriter writer = new FileWriter(file);
         writer.write(solveInfo.getCode());
         writer.close();
 
         // 컴파일
-        ProcessBuilder pb = new ProcessBuilder("python3", "-m", "py_compile",  SOLUTIONFILEROOTDIR + "Solution.py");
+        ProcessBuilder pb = new ProcessBuilder("python3", "-m", "py_compile",  SOLUTIONFILEROOTDIR + uuid + "Solution.py");
         Process process = pb.start();
         process.waitFor(); // 현재 실행한 프로세스가 종료될 때까지 블록 처리
 
         // 컴파일 체크
         if (process.exitValue() != 0) {
-            deleteUserCode();
+            deleteUserCode(uuid + "");
             return new SolveResult(0, "컴파일 에러", 0);
         }
 
@@ -96,14 +100,14 @@ public class SolveServicePython {
         // 시간 초과 체크
         if (!finished) {
             process.destroyForcibly();
-            deleteUserCode();
+            deleteUserCode(uuid + "");
             return new SolveResult((int)(elapsedTime / (long)1000000), "시간 초과", (int) finishMemory);
         }
 
         // 메모리 초과 체크
         int exitValue = process.exitValue();
         if (exitValue != 0) {
-            deleteUserCode();
+            deleteUserCode(uuid + "");
             return new SolveResult((int)(elapsedTime / (long)1000000), "런타임 에러", (int) finishMemory);
         }
 
@@ -130,17 +134,11 @@ public class SolveServicePython {
 
         // 실행 결과와 실제 정답 비교
         if (output.toString().equals(expectedOutput.toString())) {
-            deleteUserCode();
-            logger.debug("=========================SUCCESS=================================");
-            logger.debug("judge result : {}", output);
-            logger.debug("expected result : {}", expectedOutput);
+            deleteUserCode(uuid + "");
             return new SolveResult((int) (elapsedTime / (long) 1000000), "맞았습니다", (int) finishMemory);
         }
         else {
-            deleteUserCode();
-            logger.debug("=========================FAIL=================================");
-            logger.debug("judge result : {}", output);
-            logger.debug("expected result : {}", expectedOutput);
+            deleteUserCode(uuid + "");
             return new SolveResult((int) (elapsedTime / (long) 1000000), "틀렸습니다", (int) finishMemory);
         }
     }
